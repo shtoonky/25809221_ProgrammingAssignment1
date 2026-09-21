@@ -38,8 +38,12 @@ class FileManager {
                     return ErrorType::FilenameNotFound;
                 }
 
-                // Write data
-                file << "data\n";
+                // Write default data.
+                file << "scene_name=" << name << '\n';
+                file << "aspect_ratio=1.0\n";
+                file << "image_width=100\n";
+                file << "samples_per_pixel=10\n\n";
+                file << "[Objects]\n";
 
                 return ErrorType::Null;
             }

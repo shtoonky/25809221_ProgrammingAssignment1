@@ -59,9 +59,6 @@ void ListScenes() {
 
 // Show the details of a saved scene.
 void ShowScene(const std::string& name) {
-    // Look through saved scenes and find it
-    // Otherwise throw an error where there was no scene found
-    // std::cout << "\nscene viewing has not been implemented yet.\n\n";
     ErrorType is_valid = IsValidScene(name);
     if (is_valid != ErrorType::Null) {
         WriteError(is_valid);
@@ -69,6 +66,7 @@ void ShowScene(const std::string& name) {
     }
 
     Scene scene = FileManager::LoadScene(name);
+    // Need to check if the contents of the scene is valid, or it just spews gobbledegook.
 
     std::cout << '\n' << "Scene name: " << scene.scene_name << '\n';
     std::cout << "Aspect ratio: " << scene.aspect_ratio << '\n';
@@ -102,6 +100,7 @@ void DeleteScene(const std::string& name) {
     }
 }
 
+// Main menu
 int main() {
 
     bool running = true;
