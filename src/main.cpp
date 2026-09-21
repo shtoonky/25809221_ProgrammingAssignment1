@@ -21,24 +21,28 @@ void Help() {
     std::cout << output;
 }
 
+// Creates a scene with default values.
 void NewScene(const std::string& name) {
     if (name.empty()) {
         WriteError(ErrorType::FilenameEmpty);
+        return;
     }
-    else if (!IsValidFilename(name)) {
+
+    if (!IsValidFilename(name)) {
         WriteError(ErrorType::FilenameInvalid);
+        return;
+    }
+
+    ErrorType scene_created = FileManager::CreateScene(name);
+    if (scene_created == ErrorType::Null) {
+        std::cout << '\n' << name << " was successfully created.\n\n";
     }
     else {
-        ErrorType result = FileManager::CreateScene(name);
-        if (result == ErrorType::Null) {
-            std::cout << '\n' << name << " was successfully created.\n\n";
-        }
-        else {
-            WriteError(result);
-        }
+        WriteError(scene_created);
     }
 }
 
+// Allows the user to edit a saved scene.
 void EditScene(const std::string& name) {
     // Look through saved scenes and find it
     // Otherwise throw an error where there was no scene found
@@ -53,12 +57,27 @@ void ListScenes() {
     std::cout << '\n';
 }
 
+// Show the details of a saved scene.
 void ShowScene(const std::string& name) {
     // Look through saved scenes and find it
     // Otherwise throw an error where there was no scene found
-    std::cout << "\nscene viewing has not been implemented yet.\n\n";
+    // std::cout << "\nscene viewing has not been implemented yet.\n\n";
+    ErrorType is_valid = IsValidScene(name);
+    if (is_valid != ErrorType::Null) {
+        WriteError(is_valid);
+        return;
+    }
+
+    Scene scene = FileManager::LoadScene(name);
+
+    std::cout << '\n' << "Scene name: " << scene.scene_name << '\n';
+    std::cout << "Aspect ratio: " << scene.aspect_ratio << '\n';
+    std::cout << "Image width: " << scene.image_width << '\n';
+    std::cout << "Anti-aliasing strength: " << scene.samples_per_pixel << "\n\n";
+
 }
 
+// Output a .ppm file to the Renders folder of a saved scene.
 void RenderScene(const std::string& name) {
     // Look through saved scenes and find it
     // Otherwise throw an error where there was no scene found
@@ -66,21 +85,20 @@ void RenderScene(const std::string& name) {
     std::cout << "\nscene rendering has not been implemented yet.\n\n";
 }
 
+// Delete a saved scene permanently.
 void DeleteScene(const std::string& name) {
-    // Look through saved scenes and find it
-    // Otherwise throw an error where there was no scene found
-    // scene should be deleted from current build's data and files
-    if (name.empty()) {
-        WriteError(ErrorType::FilenameEmpty);
+    ErrorType is_valid = IsValidScene(name);
+    if (is_valid != ErrorType::Null) {
+        WriteError(is_valid);
+        return;
     }
+   
+    ErrorType scene_deleted = FileManager::DeleteScene(name);
+    if (scene_deleted == ErrorType::Null) {
+        std::cout << '\n' << name << " was successfully deleted.\n\n";
+    } 
     else {
-        ErrorType result = FileManager::DeleteScene(name);
-        if (result == ErrorType::Null) {
-            std::cout << '\n' << name << " was successfully deleted.\n\n";
-        } 
-        else {
-            WriteError(result);
-        }
+        WriteError(scene_deleted);
     }
 }
 
@@ -91,7 +109,6 @@ int main() {
         std::cout << "> ";
 
         std::string user_input;
-        // std::cin >> user_input;
         std::getline(std::cin, user_input);
 
         if (user_input.empty()) {

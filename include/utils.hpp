@@ -1,6 +1,9 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+#include "file_manager.hpp"
+#include "error_type.hpp"
+
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -8,15 +11,16 @@
 
 // Functions
 
-enum class ErrorType {
-    Null,
-    UnknownCommand,
-    FilenameEmpty,
-    FilenameInvalid,
-    FilenameNotFound,
-    FilenameAlreadyExists,
-    ReadingIssue
-};
+// enum class ErrorType {
+//     Null,
+//     UnknownCommand,
+//     FilenameEmpty,
+//     FilenameInvalid,
+//     FilenameNotFound,
+//     SceneAlreadyExists,
+//     SceneNotFound,
+//     ReadingIssue
+// };
 
 inline void WriteError(ErrorType error) {
     std::cout << "\nerror: ";
@@ -28,7 +32,7 @@ inline void WriteError(ErrorType error) {
             break;
         
         case ErrorType::FilenameEmpty:
-            std::cout << "filname cannot be empty.\n";
+            std::cout << "filename cannot be empty.\n";
             break;
 
         case ErrorType::FilenameInvalid:
@@ -40,7 +44,7 @@ inline void WriteError(ErrorType error) {
             std::cout << "filename could not be found.\n";
             break;
 
-        case ErrorType::FilenameAlreadyExists:
+        case ErrorType::SceneAlreadyExists:
             std::cout << "scene name already exists.\n";
             std::cout << "scene names must be unique.\n";
             break;
@@ -49,6 +53,18 @@ inline void WriteError(ErrorType error) {
             std::cout << "something went wrong when trying to read a file.\n";
     }
     std::cout << '\n';
+}
+
+inline ErrorType IsValidScene(const std::string& name) {
+    if (name.empty()) {
+        return ErrorType::FilenameEmpty;
+    }
+    
+    if (!FileManager::SceneExists(name)) {
+        return ErrorType::FilenameNotFound;
+    }
+
+    return ErrorType::Null;   
 }
 
 inline bool IsValidFilename(const std::string& name) {

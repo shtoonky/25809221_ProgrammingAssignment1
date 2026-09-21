@@ -1,1 +1,6 @@
-data
+scene_name=scene2
+aspect_ratio=2.0
+image_width=200
+samples_per_pixel=10
+
+[Objects]

@@ -1,21 +1,20 @@
 #ifndef SCENE_HPP
 #define SCENE_HPP
 
-#include "camera.hpp"
-#include "hittable_list.hpp"
-
 #include <string>
 
 class Scene {
     public:
         std::string scene_name;
+        double aspect_ratio;
         int image_width;
+        int samples_per_pixel;
 
-        HittableList world;
+        // HittableList world;
 
         // for each object in a scene txt (returned as a vector or something), add it to world OR world equals that.
 
-        Camera cam;
+        // Camera cam;
 
         // set things like aspect ratio
         // image_width
@@ -25,7 +24,7 @@ class Scene {
 
         // Ideally, we want to output a ppm to a folder, then maybe auto open it? i don't know if that's possible :|
         void RenderScene() {
-            cam.Render(world);
+
         }
 
         // Vector of hittable objects
