@@ -3,6 +3,8 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <vector>
 
 // Functions
 
@@ -68,9 +70,5 @@ inline bool IsValidFilename(const std::string& name) {
     return true;
 }
 
-// Other useful headers
-
-#include <fstream>
-#include <vector>
 
 #endif
