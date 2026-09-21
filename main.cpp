@@ -2,6 +2,8 @@
 #include <sstream>
 
 #include "utils.hpp"
+#include "file_manager.hpp"
+#include "scene_data.hpp"
 
 void Help() {
     std::ostringstream oss;
@@ -28,8 +30,12 @@ void NewScene(const std::string& name) {
         WriteError(ErrorType::FilenameInvalid);
     }
     else {
-        std::cout << "\nNew scene created: " << name << "\n\n";
-        // Create a new scene bruh
+        if (FileManager::CreateScene(name)) {
+            std::cout << '\n' << name << " was successfully created.\n\n";
+        }
+        else {
+            WriteError(ErrorType::FilenameNotFound);
+        }
     }
 }
 
@@ -38,8 +44,12 @@ void EditScene(const std::string& name) {
     // Otherwise throw an error where there was no scene found
 }
 
+// Look through saved scenes and list all names
 void ListScenes() {
-    // Look through saved scenes and list all names
+    
+    std::cout << '\n';
+    FileManager::PrintSceneNames();
+    std::cout << '\n';
 }
 
 void ShowScene(const std::string& name) {
@@ -57,6 +67,15 @@ void DeleteScene(const std::string& name) {
     // Look through saved scenes and find it
     // Otherwise throw an error where there was no scene found
     // scene should be deleted from current build's data and files
+    if (name.empty()) {
+        WriteError(ErrorType::FilenameEmpty);
+    }
+    else if (FileManager::DeleteScene(name)) {
+        std::cout << '\n' << name << " was successfully deleted.\n\n";
+    }
+    else {
+        WriteError(ErrorType::FilenameNotFound);
+    }
 }
 
 int main() {
@@ -64,6 +83,7 @@ int main() {
     // Want to load file and store them in SceneData class or something
     // which holds a list of Scenes
     // The list is them initalised using the FileManager, which handles file i/o
+    // SceneData data = SceneData();
 
     bool running = true;
     while (running) {
@@ -86,7 +106,7 @@ int main() {
             std::string name = user_input.substr(4);
             NewScene(name);
         }
-        else if (user_input.starts_with("edit")) {
+        else if (user_input.starts_with("edit ")) {
             std::string name = user_input.substr(4);
             EditScene(name);
         }
@@ -94,15 +114,15 @@ int main() {
             ListScenes();
         }
         else if (user_input.starts_with("show ")) {
-            std::string name = user_input.substr(4);
+            std::string name = user_input.substr(5);
             ShowScene(name);
         }
         else if (user_input.starts_with("render ")) {
-            std::string name = user_input.substr(4);
+            std::string name = user_input.substr(7);
             RenderScene(name);
         }
         else if (user_input.starts_with("delete ")) {
-            std::string name = user_input.substr(4);
+            std::string name = user_input.substr(7);
             DeleteScene(name);
         }
         else {

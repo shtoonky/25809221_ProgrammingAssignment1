@@ -7,10 +7,12 @@
 // Functions
 
 enum class ErrorType {
+    Null,
     UnknownCommand,
     FilenameEmpty,
-    FilenameInvalid
-    // FilenameAlreadyExists
+    FilenameInvalid,
+    FilenameNotFound,
+    FilenameAlreadyExists
 };
 
 inline void WriteError(ErrorType error) {
@@ -29,6 +31,11 @@ inline void WriteError(ErrorType error) {
         case ErrorType::FilenameInvalid:
             std::cout << "filename is invalid.\n";
             std::cout << "filenames must not contain special characters: <>:\"/\\|?* \n";
+            break;
+
+        case ErrorType::FilenameNotFound:
+            std::cout << "filename could not be found.\n";
+            break;
     }
     std::cout << '\n';
 }

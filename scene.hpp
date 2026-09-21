@@ -1,7 +1,7 @@
 #ifndef SCENE_HPP
 #define SCENE_HPP
 
-#include "utils.hpp"
+#include <string>
 
 class Scene {
     public:
