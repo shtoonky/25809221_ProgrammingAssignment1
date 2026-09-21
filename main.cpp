@@ -1,5 +1,3 @@
-// #include <iostream>
-// #include <string>
 #include <iomanip>
 #include <sstream>
 
@@ -22,7 +20,7 @@ void Help() {
     std::cout << output;
 }
 
-void New(const std::string& name) {
+void NewScene(const std::string& name) {
     if (name.empty()) {
         WriteError(ErrorType::FilenameEmpty);
     }
@@ -35,7 +33,37 @@ void New(const std::string& name) {
     }
 }
 
+void EditScene(const std::string& name) {
+    // Look through saved scenes and find it
+    // Otherwise throw an error where there was no scene found
+}
+
+void ListScenes() {
+    // Look through saved scenes and list all names
+}
+
+void ShowScene(const std::string& name) {
+    // Look through saved scenes and find it
+    // Otherwise throw an error where there was no scene found
+}
+
+void RenderScene(const std::string& name) {
+    // Look through saved scenes and find it
+    // Otherwise throw an error where there was no scene found
+    // A ppm should be generated if found
+}
+
+void DeleteScene(const std::string& name) {
+    // Look through saved scenes and find it
+    // Otherwise throw an error where there was no scene found
+    // scene should be deleted from current build's data and files
+}
+
 int main() {
+
+    // Want to load file and store them in SceneData class or something
+    // which holds a list of Scenes
+    // The list is them initalised using the FileManager, which handles file i/o
 
     bool running = true;
     while (running) {
@@ -52,26 +80,34 @@ int main() {
             running = false;
         }
         else if (user_input == "help") {
-            // std::cout << '\n';
-            // std::cout << "Helping... !" << '\n';
             Help();
-            // std::cout << '\n';
         }
         else if (user_input.starts_with("new ")) {
             std::string name = user_input.substr(4);
-            New(name);
+            NewScene(name);
+        }
+        else if (user_input.starts_with("edit")) {
+            std::string name = user_input.substr(4);
+            EditScene(name);
+        }
+        else if (user_input == "list") {
+            ListScenes();
+        }
+        else if (user_input.starts_with("show ")) {
+            std::string name = user_input.substr(4);
+            ShowScene(name);
+        }
+        else if (user_input.starts_with("render ")) {
+            std::string name = user_input.substr(4);
+            RenderScene(name);
+        }
+        else if (user_input.starts_with("delete ")) {
+            std::string name = user_input.substr(4);
+            DeleteScene(name);
         }
         else {
-            // std::cout << '\n';
-            // std::cout << "error: unknown command." << '\n';
-            // std::cout << "see 'help'." << '\n';
-            // std::cout << '\n';
             WriteError(ErrorType::UnknownCommand);
         }
     }
     return 0;
 }
-
-
-
-// WHAT DID WE LEARN? CANT APPLY SWITCH TO STRINGS

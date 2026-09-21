@@ -52,4 +52,9 @@ inline bool IsValidFilename(const std::string& name) {
     return true;
 }
 
+// Other useful headers
+
+#include <fstream>
+#include <vector>
+
 #endif
