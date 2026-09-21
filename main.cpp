@@ -3,7 +3,6 @@
 
 #include "utils.hpp"
 #include "file_manager.hpp"
-#include "scene_data.hpp"
 
 void Help() {
     std::ostringstream oss;
@@ -30,11 +29,12 @@ void NewScene(const std::string& name) {
         WriteError(ErrorType::FilenameInvalid);
     }
     else {
-        if (FileManager::CreateScene(name)) {
+        ErrorType result = FileManager::CreateScene(name);
+        if (result == ErrorType::Null) {
             std::cout << '\n' << name << " was successfully created.\n\n";
         }
         else {
-            WriteError(ErrorType::FilenameNotFound);
+            WriteError(result);
         }
     }
 }
@@ -42,6 +42,7 @@ void NewScene(const std::string& name) {
 void EditScene(const std::string& name) {
     // Look through saved scenes and find it
     // Otherwise throw an error where there was no scene found
+    std::cout << "\nscene editing has not been implemented yet.\n\n";
 }
 
 // Look through saved scenes and list all names
@@ -55,12 +56,14 @@ void ListScenes() {
 void ShowScene(const std::string& name) {
     // Look through saved scenes and find it
     // Otherwise throw an error where there was no scene found
+    std::cout << "\nscene viewing has not been implemented yet.\n\n";
 }
 
 void RenderScene(const std::string& name) {
     // Look through saved scenes and find it
     // Otherwise throw an error where there was no scene found
     // A ppm should be generated if found
+    std::cout << "\nscene rendering has not been implemented yet.\n\n";
 }
 
 void DeleteScene(const std::string& name) {
@@ -70,20 +73,18 @@ void DeleteScene(const std::string& name) {
     if (name.empty()) {
         WriteError(ErrorType::FilenameEmpty);
     }
-    else if (FileManager::DeleteScene(name)) {
-        std::cout << '\n' << name << " was successfully deleted.\n\n";
-    }
     else {
-        WriteError(ErrorType::FilenameNotFound);
+        ErrorType result = FileManager::DeleteScene(name);
+        if (result == ErrorType::Null) {
+            std::cout << '\n' << name << " was successfully deleted.\n\n";
+        } 
+        else {
+            WriteError(result);
+        }
     }
 }
 
 int main() {
-
-    // Want to load file and store them in SceneData class or something
-    // which holds a list of Scenes
-    // The list is them initalised using the FileManager, which handles file i/o
-    // SceneData data = SceneData();
 
     bool running = true;
     while (running) {

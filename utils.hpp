@@ -12,7 +12,8 @@ enum class ErrorType {
     FilenameEmpty,
     FilenameInvalid,
     FilenameNotFound,
-    FilenameAlreadyExists
+    FilenameAlreadyExists,
+    ReadingIssue
 };
 
 inline void WriteError(ErrorType error) {
@@ -36,6 +37,14 @@ inline void WriteError(ErrorType error) {
         case ErrorType::FilenameNotFound:
             std::cout << "filename could not be found.\n";
             break;
+
+        case ErrorType::FilenameAlreadyExists:
+            std::cout << "scene name already exists.\n";
+            std::cout << "scene names must be unique.\n";
+            break;
+
+        case ErrorType::ReadingIssue:
+            std::cout << "something went wrong when trying to read a file.\n";
     }
     std::cout << '\n';
 }
