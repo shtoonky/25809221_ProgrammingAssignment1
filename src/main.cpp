@@ -3,6 +3,9 @@
 
 #include "utils.hpp"
 #include "file_manager.hpp"
+// #include "include/raytracer/rtweekend_utils.hpp"
+
+// build with: g++ -std=c++20 -Iinclude src/main.cpp -o program
 
 void Help() {
     std::ostringstream oss;
@@ -83,7 +86,17 @@ void RenderScene(const std::string& name) {
     // Look through saved scenes and find it
     // Otherwise throw an error where there was no scene found
     // A ppm should be generated if found
-    std::cout << "\nscene rendering has not been implemented yet.\n\n";
+
+    if (name == "sample scene") {
+        Scene scene = FileManager::LoadScene(name).Value();
+        scene.Initialise();
+        FileManager::WriteRender(scene);
+        std::cout << '\n';
+    }
+    else {
+    std::cout << "\nscene rendering has not been implemented yet.\n\n";    
+    }
+
 }
 
 // Delete a saved scene permanently.

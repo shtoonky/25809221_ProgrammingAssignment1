@@ -1,35 +1,39 @@
 #ifndef SCENE_HPP
 #define SCENE_HPP
 
+#include "raytracer/colour.hpp"
+#include "raytracer/vec3.hpp"
+#include "raytracer/hittable.hpp"
+#include "raytracer/hittable_list.hpp"
+#include "raytracer/sphere.hpp"
+#include "raytracer/camera.hpp"
+// #include "file_manager.hpp"
+// #include "error_type.hpp"
+
 #include <string>
 
 class Scene {
     public:
         std::string scene_name;
-        double aspect_ratio;
-        int image_width;
-        int samples_per_pixel;
+        double aspect_ratio = 1.0;;
+        int image_width = 100;
+        
+        int samples_per_pixel = 10;
 
-        // HittableList world;
+        HittableList world;
+        Camera cam;
 
-        // for each object in a scene txt (returned as a vector or something), add it to world OR world equals that.
+        void Initialise() {
 
-        // Camera cam;
+            world.Add(make_shared<Sphere>(Point3(0, 0, -1), 0.5));
+            world.Add(make_shared<Sphere>(Point3(0, -100.5, -1), 100));
 
-        // set things like aspect ratio
-        // image_width
-        //samples per pixel
-
-        // then render
-
-        // Ideally, we want to output a ppm to a folder, then maybe auto open it? i don't know if that's possible :|
-        void RenderScene() {
-
+            cam.aspect_ratio = aspect_ratio;
+            cam.image_width = image_width;
+            cam.Initialise();
         }
 
-        // Vector of hittable objects
-        // Anti alias settings
-        // image size
+        // Then render using filemanager
 };
 
 #endif

@@ -18,7 +18,7 @@ class FileManager {
 
         // Prints the name of all files (excluding file extensions) in the Scenes directory.
         static void PrintSceneNames() {
-            for (const auto& entry : fs::directory_iterator("Scenes")) {
+            for (const auto& entry : fs::directory_iterator("Data/Scenes")) {
                 std::cout << entry.path().stem().string() << '\n';
             }  
         }
@@ -26,7 +26,7 @@ class FileManager {
         // Creates a new scene file in the Scenes directory.
         static Result<void, ErrorType> CreateScene(const std::string& name) {
             try {
-                fs::path filepath = fs::path("Scenes") / (name + ".txt");
+                fs::path filepath = fs::path("Data/Scenes") / (name + ".txt");
 
                 if (fs::exists(filepath)) {
                     return Result<void, ErrorType>::Failure(ErrorType::SceneAlreadyExists); 
@@ -56,7 +56,7 @@ class FileManager {
         // Deletes a scene file in the Scene directory.
         static Result<void, ErrorType> DeleteScene(const std::string& name) {
             try {
-                for (const auto& entry : fs::directory_iterator("Scenes")) {
+                for (const auto& entry : fs::directory_iterator("Data/Scenes")) {
                     if (entry.path().stem().string() == name) {
                         fs::remove(entry.path());
                         return Result<void, ErrorType>::Success();
@@ -71,7 +71,7 @@ class FileManager {
 
         // Checks if a scene file (<scene_name>.txt) exists in the Scene directory.
         static bool SceneExists(const std::string& name) {
-            fs::path filepath = fs::path("Scenes") / (name + ".txt");
+            fs::path filepath = fs::path("Data/Scenes") / (name + ".txt");
             if (fs::exists(filepath)) {
                 return true;
             }
@@ -87,7 +87,7 @@ class FileManager {
                 fs::path filepath;
 
                 // Find the correct scene by name
-                for (const auto& entry : fs::directory_iterator("Scenes")) {
+                for (const auto& entry : fs::directory_iterator("Data/Scenes")) {
                     if (entry.path().stem().string() == name) {
                         filepath = entry.path();
                     }
@@ -144,6 +144,29 @@ class FileManager {
             }
         }
 
+        // Creates a ppm file based on scene data.
+        static Result<void, ErrorType> WriteRender(const Scene& scene) {
+            std::ofstream output_file("Data/Renders/" + scene.scene_name + ".ppm");
+
+            if (!output_file.is_open()) { // Error opening the file.
+                return Result<void, ErrorType>::Failure(ErrorType::ReadingIssue);
+            }
+
+            output_file << "P3\n" << scene.image_width << ' ' << scene.cam.image_height << "\n255\n";
+
+            for (int j = 0; j < scene.cam.image_height; j++) {
+                // std::clog << "\rScanlines remaining: " << (scene.image_height - j) << ' ' << std::flush;
+                for (int i = 0; i < scene.image_width; i++) {
+                    auto pixel_center = scene.cam.pixel00_loc + (i * scene.cam.pixel_delta_u) + (j * scene.cam.pixel_delta_v);
+                    auto ray_direction = pixel_center - scene.cam.center;
+                    Ray r(scene.cam.center, ray_direction);
+
+                    Colour pixel_color = scene.cam.RayColour(r, scene.world);
+                    WriteColour(output_file, pixel_color);
+                }
+            }
+            return Result<void, ErrorType>::Success();
+        }
 };
 
 #endif

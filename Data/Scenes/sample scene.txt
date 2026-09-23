@@ -1,6 +1,6 @@
 scene_name=sample scene
-aspect_ratio=1.0
-image_width=100
+aspect_ratio=1.78
+image_width=400
 samples_per_pixel=10
 
 [Objects]
