@@ -1,7 +1,6 @@
 #include <iomanip>
 #include <sstream>
 
-#include "result.hpp"
 #include "utils.hpp"
 #include "file_manager.hpp"
 
@@ -24,30 +23,23 @@ void Help() {
 
 // Creates a scene with default values.
 void NewScene(const std::string& name) {
+    // Check validity of name.
     if (name.empty()) {
         WriteError(ErrorType::FilenameEmpty);
         return;
     }
-
     if (!IsValidFilename(name)) {
         WriteError(ErrorType::FilenameInvalid);
         return;
     }
 
-    // Result<ErrorType> result = FileManager::CreateScene(name);
+    // Attempt to create a new scene.
+    Result<void, ErrorType> result = FileManager::CreateScene(name);
 
-    // if (!result.HasValue()) {
-    //     WriteError(result.Error());
-    // } else {
-    //     std::cout << '\n' << name << " was successfully created.\n\n";
-    // }
-
-    ErrorType scene_created = FileManager::CreateScene(name);
-    if (scene_created == ErrorType::Null) {
+    if (!result.HasValue()) {
+        WriteError(result.Error());
+    } else {
         std::cout << '\n' << name << " was successfully created.\n\n";
-    }
-    else {
-        WriteError(scene_created);
     }
 }
 
@@ -74,8 +66,10 @@ void ShowScene(const std::string& name) {
         return;
     }
 
-    Scene scene = FileManager::LoadScene(name);
-    // Need to check if the contents of the scene is valid, or it just spews gobbledegook.
+    Scene scene = FileManager::LoadScene(name).Value();
+
+    // Scene scene = FileManager::LoadScene(name);
+    // // Need to check if the contents of the scene is valid, or it just spews gobbledegook.
 
     std::cout << '\n' << "Scene name: " << scene.scene_name << '\n';
     std::cout << "Aspect ratio: " << scene.aspect_ratio << '\n';
@@ -94,18 +88,19 @@ void RenderScene(const std::string& name) {
 
 // Delete a saved scene permanently.
 void DeleteScene(const std::string& name) {
+    // Check if scene exists.
     ErrorType is_valid = IsValidScene(name);
     if (is_valid != ErrorType::Null) {
         WriteError(is_valid);
         return;
     }
    
-    ErrorType scene_deleted = FileManager::DeleteScene(name);
-    if (scene_deleted == ErrorType::Null) {
+    // Attempt to delete scene.
+    Result<void, ErrorType> result = FileManager::DeleteScene(name);
+    if (!result.HasValue()) {
+        WriteError(result.Error());
+    } else {
         std::cout << '\n' << name << " was successfully deleted.\n\n";
-    } 
-    else {
-        WriteError(scene_deleted);
     }
 }
 

@@ -1,3 +1,6 @@
+#ifndef RESULT_HPP
+#define RESULT_HPP
+
 #include <variant>
 
 // Primary result template.
@@ -32,10 +35,9 @@ class Result {
         std::variant<T, E> r_value;
 
         // Private constructors for code readability.
-        Result(T value) { r_value = value; }
+        Result(T value) : r_value(value) {}
 
-        Result(E error) { r_value = error; }
-
+        Result(E error) : r_value(error) {}
 };
 
 // Specialization for when there is no success return type.
@@ -65,9 +67,9 @@ class Result<void, E> {
         std::variant<std::monostate, E> r_value;
 
         // Private constructors for code readability.
-        // Result() {}
+        Result() : r_value(std::monostate{}) {}
 
-        Result(E error) { r_value = error; }
-
-        
+        Result(E error) : r_value(error) {}
 };
+
+#endif

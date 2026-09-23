@@ -1,6 +1,7 @@
 #ifndef FILE_MANAGER_HPP
 #define FILE_MANAGER_HPP
 
+#include "result.hpp"
 #include "scene.hpp"
 #include "error_type.hpp"
 
@@ -23,19 +24,19 @@ class FileManager {
         }
 
         // Creates a new scene file in the Scenes directory.
-        static ErrorType CreateScene(const std::string& name) {
+        static Result<void, ErrorType> CreateScene(const std::string& name) {
             try {
                 fs::path filepath = fs::path("Scenes") / (name + ".txt");
 
                 if (fs::exists(filepath)) {
-                    return ErrorType::SceneAlreadyExists;
+                    return Result<void, ErrorType>::Failure(ErrorType::SceneAlreadyExists); 
                 }
                 
                 // Open the file
                 std::ofstream file(filepath);
 
                 if (!file) {
-                    return ErrorType::FilenameNotFound;
+                    return Result<void, ErrorType>::Failure(ErrorType::FilenameNotFound); 
                 }
 
                 // Write default data.
@@ -45,26 +46,26 @@ class FileManager {
                 file << "samples_per_pixel=10\n\n";
                 file << "[Objects]\n";
 
-                return ErrorType::Null;
+                return Result<void, ErrorType>::Success();
             }
             catch (const fs::filesystem_error& e) {
-                return ErrorType::ReadingIssue;
+                return Result<void, ErrorType>::Failure(ErrorType::ReadingIssue); 
             } 
         }
 
         // Deletes a scene file in the Scene directory.
-        static ErrorType DeleteScene(const std::string& name) {
+        static Result<void, ErrorType> DeleteScene(const std::string& name) {
             try {
                 for (const auto& entry : fs::directory_iterator("Scenes")) {
                     if (entry.path().stem().string() == name) {
                         fs::remove(entry.path());
-                        return ErrorType::Null;
+                        return Result<void, ErrorType>::Success();
                     }
                 }  
-                return ErrorType::FilenameNotFound;               
+                return Result<void, ErrorType>::Failure(ErrorType::FilenameNotFound);
             }
             catch (const fs::filesystem_error& e) {
-                return ErrorType::ReadingIssue;
+                return Result<void, ErrorType>::Failure(ErrorType::ReadingIssue);
             }
         }
 
@@ -78,19 +79,23 @@ class FileManager {
         }
 
         // Returns a scene based on the contents of a scene file.
-        static Scene LoadScene(const std::string& name) {
-            Scene scene;
-            fs::path filepath;
+        static Result<Scene, ErrorType> LoadScene(const std::string& name) {
+
             try {
+
+                Scene scene;
+                fs::path filepath;
+
                 // Find the correct scene by name
                 for (const auto& entry : fs::directory_iterator("Scenes")) {
                     if (entry.path().stem().string() == name) {
                         filepath = entry.path();
                     }
                 }
-
+                
+                // If the filepath is default constructed, return an error.
                 if (filepath.empty()) {
-                    // Something went wrong.
+                    return Result<Scene, ErrorType>::Failure(ErrorType::SceneNotFound);
                 }
 
                 std::ifstream file(filepath);
@@ -132,21 +137,12 @@ class FileManager {
                     }
                 }
 
-                return scene;
+                return Result<Scene, ErrorType>::Success(scene);
             }
             catch (const fs::filesystem_error& e) {
-                return Scene(); // Placeholder im sorry
+                return Result<Scene, ErrorType>::Failure(ErrorType::ReadingIssue);
             }
         }
-
-        // static void RenderScene(const Scene& scene) {
-
-        //     std::ofstream outputFile(scene.scene_name + ".ppm");
-
-        //     if (!outputFile.is_open()) {}
-
-        // }
-
 
 };
 
