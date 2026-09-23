@@ -68,7 +68,7 @@ class FileManager {
             }
         }
 
-        // Checks if a scene file exists in the Scene directory.
+        // Checks if a scene file (<scene_name>.txt) exists in the Scene directory.
         static bool SceneExists(const std::string& name) {
             fs::path filepath = fs::path("Scenes") / (name + ".txt");
             if (fs::exists(filepath)) {
@@ -138,6 +138,16 @@ class FileManager {
                 return Scene(); // Placeholder im sorry
             }
         }
+
+        // static void RenderScene(const Scene& scene) {
+
+        //     std::ofstream outputFile(scene.scene_name + ".ppm");
+
+        //     if (!outputFile.is_open()) {}
+
+        // }
+
+
 };
 
 #endif

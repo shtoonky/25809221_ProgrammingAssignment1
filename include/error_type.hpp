@@ -1,8 +1,9 @@
 #ifndef ERROR_TYPE_HPP
 #define ERROR_TYPE_HPP
 
+// Enum class for returning and printing errors to console.
 enum class ErrorType {
-    Null,
+    Null, // For when there is no error
     UnknownCommand,
     FilenameEmpty,
     FilenameInvalid,

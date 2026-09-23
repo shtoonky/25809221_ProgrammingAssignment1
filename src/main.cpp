@@ -1,6 +1,7 @@
 #include <iomanip>
 #include <sstream>
 
+#include "result.hpp"
 #include "utils.hpp"
 #include "file_manager.hpp"
 
@@ -32,6 +33,14 @@ void NewScene(const std::string& name) {
         WriteError(ErrorType::FilenameInvalid);
         return;
     }
+
+    // Result<ErrorType> result = FileManager::CreateScene(name);
+
+    // if (!result.HasValue()) {
+    //     WriteError(result.Error());
+    // } else {
+    //     std::cout << '\n' << name << " was successfully created.\n\n";
+    // }
 
     ErrorType scene_created = FileManager::CreateScene(name);
     if (scene_created == ErrorType::Null) {
