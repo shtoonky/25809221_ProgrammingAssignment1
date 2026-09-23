@@ -48,9 +48,15 @@ void NewScene(const std::string& name) {
 
 // Allows the user to edit a saved scene.
 void EditScene(const std::string& name) {
-    // Look through saved scenes and find it
-    // Otherwise throw an error where there was no scene found
-    std::cout << "\nscene editing has not been implemented yet.\n\n";
+    ErrorType is_valid = IsValidScene(name);
+    if (is_valid != ErrorType::Null) {
+        WriteError(is_valid);
+        return;
+    }
+
+    Scene scene = FileManager::LoadScene(name).Value();
+
+    /// Edit stuff
 }
 
 // Look through saved scenes and list all names
@@ -71,32 +77,21 @@ void ShowScene(const std::string& name) {
 
     Scene scene = FileManager::LoadScene(name).Value();
 
-    // Scene scene = FileManager::LoadScene(name);
-    // // Need to check if the contents of the scene is valid, or it just spews gobbledegook.
-
-    std::cout << '\n' << "Scene name: " << scene.scene_name << '\n';
-    std::cout << "Aspect ratio: " << scene.aspect_ratio << '\n';
-    std::cout << "Image width: " << scene.image_width << '\n';
-    std::cout << "Anti-aliasing strength: " << scene.samples_per_pixel << "\n\n";
-
+    scene.ShowScene();
 }
 
 // Output a .ppm file to the Renders folder of a saved scene.
 void RenderScene(const std::string& name) {
-    // Look through saved scenes and find it
-    // Otherwise throw an error where there was no scene found
-    // A ppm should be generated if found
-
-    if (name == "sample scene") {
-        Scene scene = FileManager::LoadScene(name).Value();
-        scene.Initialise();
-        FileManager::WriteRender(scene);
-        std::cout << '\n';
-    }
-    else {
-    std::cout << "\nscene rendering has not been implemented yet.\n\n";    
+    ErrorType is_valid = IsValidScene(name);
+    if (is_valid != ErrorType::Null) {
+        WriteError(is_valid);
+        return;
     }
 
+    Scene scene = FileManager::LoadScene(name).Value();
+    scene.Initialise();
+    FileManager::WriteRender(scene);
+    std::cout << '\n';
 }
 
 // Delete a saved scene permanently.

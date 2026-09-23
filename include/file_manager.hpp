@@ -4,11 +4,14 @@
 #include "result.hpp"
 #include "scene.hpp"
 #include "error_type.hpp"
+#include "raytracer/sphere.hpp"
+// #include "raytracer/hittable_list.hpp"
 
 #include <filesystem>
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <vector>
 
 namespace fs = std::filesystem;
 
@@ -102,6 +105,7 @@ class FileManager {
                 std::string line;
 
                 bool reading_objects = false;
+                int current_obj_index {0};
 
                 while (std::getline(file, line)) {
                     auto separator = line.find('='); //std::size_t
@@ -111,13 +115,16 @@ class FileManager {
                         continue;
                     }
 
+                    // if (separator == std::string::npos) {
+                    //     continue;
+                    // }
+
                     if (!reading_objects) {
                         if (separator == std::string::npos) {
                             continue;
                         }
-
                         std::string key = line.substr(0, separator);
-                        std::string value = line.substr(separator + 1);
+                        std::string value = line.substr(separator + 1);                         
 
                         if (key == "scene_name") {
                             scene.scene_name = value;
@@ -133,10 +140,24 @@ class FileManager {
                         }                        
                     }
                     else {
-                        // then read objects ig :|
+                        std::vector<std::string> object_data;
+                        std::stringstream ss(line);
+                        std::string value;
+
+                        while (std::getline(ss, value, ',')) {
+                            object_data.push_back(value);
+                        }
+
+                        if (object_data[0] == "sphere") {
+                            auto name = object_data[1];
+                            auto center = Point3(std::stod(object_data[2]), std::stod(object_data[3]), std::stod(object_data[4]));
+                            double radius = std::stod(object_data[5]);
+                            scene.world.Add(make_shared<Sphere>(name, center, radius));
+                        }
                     }
                 }
 
+                file.close();
                 return Result<Scene, ErrorType>::Success(scene);
             }
             catch (const fs::filesystem_error& e) {
@@ -167,6 +188,7 @@ class FileManager {
             }
             return Result<void, ErrorType>::Success();
         }
+
 };
 
 #endif

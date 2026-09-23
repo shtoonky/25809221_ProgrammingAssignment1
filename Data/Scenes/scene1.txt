@@ -4,3 +4,6 @@ image_width=100
 samples_per_pixel=10
 
 [Objects]
+sphere,sphere0,0,0,-1,0.2
+sphere,sphere3,0,1,-1,0.35
+sphere,sphere2,0,2,-1,0.5
