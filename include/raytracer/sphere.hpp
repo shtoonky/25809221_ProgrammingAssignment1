@@ -44,7 +44,6 @@ class Sphere : public Hittable {
             std::cout << "\nShow sphere\n";
         }
 
-    // private:
         Point3 center;
         double radius;
 };

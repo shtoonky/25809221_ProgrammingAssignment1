@@ -214,7 +214,7 @@ class FileManager {
 
             for (const auto& object : scene.world.objects) {
                 if (auto sphere = std::dynamic_pointer_cast<Sphere>(object)) {
-                    output_file << "sphere," << sphere -> name << ',' << sphere -> center.e[0] << ',' << sphere -> center.e[1] << sphere -> center.e[2]  << ',' << sphere -> radius << '\n';
+                    output_file << "sphere," << sphere -> name << ',' << sphere -> center.e[0] << ',' << sphere -> center.e[1] << ',' << sphere -> center.e[2]  << ',' << sphere -> radius << '\n';
                 }
                 else {
                     continue;

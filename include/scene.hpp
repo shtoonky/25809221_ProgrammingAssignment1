@@ -25,7 +25,15 @@ class Scene {
 
         bool HasObject(const std::string& name);
 
+        Result<shared_ptr<Hittable>, ErrorType> GetObject(const std::string& name);
+
         Result<void, ErrorType> AddNewObject(const std::string& object_type, const std::string& object_name);
+
+        Result<void, ErrorType> RemoveObject(const std::string& name);
+
+        Result<void, ErrorType> ModifyObject(shared_ptr<Hittable>& object,const std::string& variable,const std::string& value);
+
+        std::vector<std::string> GetObjectNames();
 };
 
 #endif

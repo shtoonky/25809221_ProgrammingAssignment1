@@ -13,6 +13,8 @@ class CLI {
         static void Help();
 
         static void EditHelp();
+
+        static void ShowObject(const shared_ptr<Hittable>& object);
 };
 
 #endif

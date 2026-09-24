@@ -50,6 +50,10 @@ inline void WriteError(ErrorType error, bool editing = false) {
         case ErrorType::ObjectAlreadyExists:
             std::cout << "object names must be unique.\n";
             break;  
+
+        case ErrorType::ObjectNotFound:
+            std::cout << "object could not be found.\n";
+            break;  
     }
     std::cout << '\n';
 }
@@ -84,6 +88,15 @@ inline ErrorType IsValidNameForScene(const std::string& name) {
     }
 
     return ErrorType::Null;
+}
+
+inline int IsObjectName(const std::string& user_input, const std::vector<std::string>& names) {
+    for (auto name : names) {
+        if (user_input.starts_with(name)) {
+            return name.length();
+        } 
+    }
+    return -1;
 }
 
 #endif
