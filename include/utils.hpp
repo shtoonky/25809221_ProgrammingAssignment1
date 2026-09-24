@@ -54,6 +54,10 @@ inline void WriteError(ErrorType error, bool editing = false) {
         case ErrorType::ObjectNotFound:
             std::cout << "object could not be found.\n";
             break;  
+
+        case ErrorType::InvalidValue:
+            std::cout << "value given is not applicable.\n";
+            break;  
     }
     std::cout << '\n';
 }
@@ -97,6 +101,15 @@ inline int IsObjectName(const std::string& user_input, const std::vector<std::st
         } 
     }
     return -1;
+}
+
+inline bool IsSceneSetting(const std::string& user_input, const std::vector<std::string>& scene_settings) {
+    for (auto setting : scene_settings) {
+        if (user_input.starts_with(setting)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 #endif

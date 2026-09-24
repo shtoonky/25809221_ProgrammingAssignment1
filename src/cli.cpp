@@ -183,6 +183,7 @@ void CLI::EditScene(Scene& scene) {
     const std::string prefix = std::string(indent, ' ');
 
     auto names = scene.GetObjectNames();
+    std::vector<std::string> scene_settings {"scene_name","aspect_ratio","image_width","antialiasing"};
 
     std::cout << '\n';
 
@@ -236,7 +237,6 @@ void CLI::EditScene(Scene& scene) {
             names = scene.GetObjectNames();
         }
         else if (input_object_name != -1) { // User is attempting to modify an object's value
-            // std::string obj_info = user_input.substr(input_object_name + 1);
 
             std::istringstream iss(user_input);
             std::string object_name;
@@ -268,6 +268,46 @@ void CLI::EditScene(Scene& scene) {
             }
 
             std::cout << '\n' << prefix << "Successfully modified " << object_name << "\n\n";
+        }
+        else if (IsSceneSetting(user_input, scene_settings)) { // User is attempting to modify scene settings
+            std::istringstream iss(user_input);
+            std::string setting_name;
+            std::string value;
+
+            iss >> setting_name;
+            std::getline(iss, value);
+            value.erase(0, value.find_first_not_of(' '));
+
+            if (setting_name.empty() || value.empty()) {
+                WriteError(ErrorType::UnknownCommand, true);
+                continue;  
+            }
+
+            try {
+                if (setting_name == "scene_name") {
+                    scene.scene_name = value;
+                }
+                else if (setting_name == "aspect_ratio") {
+                    scene.aspect_ratio = std::stod(value);
+                }
+                else if (setting_name == "image_width") {
+                    scene.image_width = std::stoi(value);
+                }
+                else if (setting_name == "anti_aliasing") {
+                    scene.samples_per_pixel = std::stoi(value);
+                }
+                else {
+                    WriteError(ErrorType::UnknownCommand, true);
+                    continue;
+                }
+
+                std::cout << '\n' << prefix << setting_name << " successfully configured.\n\n";                
+            }
+            catch (const std::invalid_argument&) {
+                WriteError(ErrorType::InvalidValue, true);
+                continue;
+            }
+
         }
         else if (user_input.starts_with("list")) {
             std::cout << '\n';
@@ -344,6 +384,7 @@ void CLI::EditHelp() {
     oss << '\n' << prefix << "commands:\n" << std::left
     << prefix << std::setw(width) << "   new <object_type> <object_name>" << "create a new object\n"
     << prefix << std::setw(width) << "   <object_name> <object_variable> <value>" << "edit an object\n"
+    << prefix << std::setw(width) << "   <scene variable> <value>" << "edit scene settings\n"
     << prefix << std::setw(width) << "   list" << "list objects and their values\n"
     << prefix << std::setw(width) << "   show <object_name>" << "list an object and its values\n"
     << prefix << std::setw(width) << "   delete <object_name>" << "delete an object\n"

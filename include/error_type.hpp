@@ -13,7 +13,8 @@ enum class ErrorType {
     ReadingIssue, // An issue occurred with file i/o
     InvalidObjectName, // User is trying to modify/create/delete an object with an invalid type/name
     ObjectAlreadyExists, // User tries to create an object with a name that is already being used
-    ObjectNotFound // Instance of an object could not be found by a method
+    ObjectNotFound, // Instance of an object could not be found by a method
+    InvalidValue // Value given to scene variable is invalid
 };
 
 #endif
