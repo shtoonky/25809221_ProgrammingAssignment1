@@ -19,9 +19,9 @@ namespace fs = std::filesystem;
 class FileManager {
     public:
         // Creates a new scene file in the Scenes directory.
-        static Result<void, ErrorType> CreateScene(const std::string& name) {
+        static Result<void, ErrorType> CreateScene(const Scene& scene) {
             try {
-                fs::path filepath = fs::path("Data/Scenes") / (name + ".txt");
+                fs::path filepath = fs::path("Data/Scenes") / (scene.scene_name + ".txt");
 
                 if (fs::exists(filepath)) {
                     return Result<void, ErrorType>::Failure(ErrorType::SceneAlreadyExists); 
@@ -35,10 +35,10 @@ class FileManager {
                 }
 
                 // Write default data.
-                file << "scene_name=" << name << '\n';
-                file << "aspect_ratio=1.0\n";
-                file << "image_width=100\n";
-                file << "samples_per_pixel=10\n\n";
+                file << "scene_name=" << scene.scene_name << '\n';
+                file << "aspect_ratio=" << scene.aspect_ratio << '\n';
+                file << "image_width=" << scene.image_width << '\n';
+                file << "samples_per_pixel=" << scene.samples_per_pixel << "\n\n";
                 file << "[Objects]\n";
 
                 return Result<void, ErrorType>::Success();
@@ -174,11 +174,12 @@ class FileManager {
         }
 
         // Creates a ppm file based on scene data.
-        static Result<void, ErrorType> WriteRender(const Scene& scene) {
+        static Result<std::string, ErrorType> WriteRender(const Scene& scene) {
             std::ofstream output_file("Data/Renders/" + scene.scene_name + ".ppm");
+            std::string output_dir("Data/Renders/" + scene.scene_name + ".ppm");
 
             if (!output_file.is_open()) { // Error opening the file.
-                return Result<void, ErrorType>::Failure(ErrorType::ReadingIssue);
+                return Result<std::string, ErrorType>::Failure(ErrorType::ReadingIssue);
             }
 
             output_file << "P3\n" << scene.image_width << ' ' << scene.cam.image_height << "\n255\n";
@@ -194,25 +195,33 @@ class FileManager {
                     WriteColour(output_file, pixel_color);
                 }
             }
-            return Result<void, ErrorType>::Success();
+            return Result<std::string, ErrorType>::Success(output_dir);
         }
 
-        static Result<void, ErrorType> AddObjectToScene(const Scene& scene, const Hittable& object) {
-            fs::path filepath = fs::path("Data/Scenes") / (scene.scene_name + ".txt");
-            
-            // Open the file
-            std::ofstream file(filepath, std::ios::app);
+        // Write a scene's contents to memory.
+        static Result<void, ErrorType> SaveScene(const Scene& scene) {
+            std::ofstream output_file("Data/Scenes/" + scene.scene_name + ".txt");
 
-            if (!file) {
-                return Result<void, ErrorType>::Failure(ErrorType::FilenameNotFound); 
+            if (!output_file.is_open()) {
+                return Result<void, ErrorType>::Failure(ErrorType::ReadingIssue);
             }
 
-            // if ()
+            output_file << "scene_name=" << scene.scene_name << '\n';
+            output_file << "aspect_ratio=" << scene.aspect_ratio << '\n';
+            output_file << "image_width=" << scene.image_width << '\n';
+            output_file << "samples_per_pixel=" << scene.samples_per_pixel << "\n\n";
+            output_file << "[Objects]\n";
 
-            // file << obj_info[0] << ' ' << obj_info[1];
+            for (const auto& object : scene.world.objects) {
+                if (auto sphere = std::dynamic_pointer_cast<Sphere>(object)) {
+                    output_file << "sphere," << sphere -> name << ',' << sphere -> center.e[0] << ',' << sphere -> center.e[1] << sphere -> center.e[2]  << ',' << sphere -> radius << '\n';
+                }
+                else {
+                    continue;
+                }
+            }
             return Result<void, ErrorType>::Success();
         }
-
 };
 
 #endif

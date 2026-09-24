@@ -46,22 +46,15 @@ inline void WriteError(ErrorType error, bool editing = false) {
         case ErrorType::InvalidObjectName:
             std::cout << "object has invalid type or name.\n";
             break;
+
+        case ErrorType::ObjectAlreadyExists:
+            std::cout << "object names must be unique.\n";
+            break;  
     }
     std::cout << '\n';
 }
 
-inline ErrorType IsValidScene(const std::string& name) {
-    if (name.empty()) {
-        return ErrorType::FilenameEmpty;
-    }
-    
-    if (!FileManager::SceneExists(name)) {
-        return ErrorType::FilenameNotFound;
-    }
-
-    return ErrorType::Null;   
-}
-
+// Checks if a name for a windows file is valid (mostly).
 inline bool IsValidFilename(const std::string& name) {
     if (name.empty()) 
         return false;
@@ -79,6 +72,18 @@ inline bool IsValidFilename(const std::string& name) {
     }
 
     return true;
+}
+
+inline ErrorType IsValidNameForScene(const std::string& name) {
+    if (name.empty()) {
+        return ErrorType::FilenameEmpty;
+    }
+
+    if (!IsValidFilename(name)) {
+        return ErrorType::FilenameInvalid;
+    }
+
+    return ErrorType::Null;
 }
 
 #endif

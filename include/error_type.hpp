@@ -11,7 +11,8 @@ enum class ErrorType {
     SceneAlreadyExists, // User tries to name a new scene after one that already exists
     SceneNotFound, // User tries to load/render a scene that doesn't exist
     ReadingIssue, // An issue occurred with file i/o
-    InvalidObjectName 
+    InvalidObjectName, // User is trying to modify/create/delete an object with an invalid type/name
+    ObjectAlreadyExists // User tries to create an object with a name that is already being used
 };
 
 #endif
