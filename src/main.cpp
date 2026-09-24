@@ -3,9 +3,114 @@
 
 #include "utils.hpp"
 #include "file_manager.hpp"
-// #include "include/raytracer/rtweekend_utils.hpp"
 
 // build with: g++ -std=c++20 -Iinclude src/main.cpp -o program
+
+class SceneData {
+    public:
+        std::vector<Scene> scenes;
+        
+        SceneData() : scenes(FileManager::LoadScenes().Value()) {}
+
+        // Creates a new scene object.
+        void NewScene(const std::string& name) {
+            scenes.push_back(Scene(name));
+        }
+
+        void EditScene(const std::string& name) {
+            Scene scene;
+            bool found = false; // temp
+            for (auto sc : scenes) {
+                if (sc.scene_name == name) {
+                    scene = sc;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return;
+
+            bool editing = true;
+            int indent {3};
+
+            std::cout << '\n';
+
+            while (editing) {
+                std::cout << std::string(indent, ' ') << "> ";
+
+                std::string user_input;
+                std::getline(std::cin, user_input);
+
+                if (user_input.empty()) {
+                    continue;
+                } else if (user_input == "quit") {
+                    std::cout << "\nNo longer editing.\n\n";
+                    editing = false;
+                } else if (user_input == "help") {
+                    scene.EditHelp();
+                } else if (user_input.starts_with("new ")) {
+                    std::string obj_info = user_input.substr(4);
+
+                    std::istringstream stream(obj_info);
+                    std::string word;
+                    std::vector<std::string> words;
+
+                    while (stream >> word) {
+                        words.push_back(word);
+                    } 
+
+                    scene.AddNewObject(words);
+                    // FileManager::AddObjectToScene(scene, words);
+                } else if (user_input.starts_with("show ")) {
+                    std::string object_name = user_input.substr(5);
+                    scene.ShowObject(object_name);
+
+                }
+                else {
+                    std::cout << std::string(indent, ' '); //<< "Unknown Command. \n\n";
+                    WriteError(ErrorType::UnknownCommand, true);
+                }
+            }
+        }
+
+        void ShowScene(const std::string& name) {
+            ErrorType is_valid = IsValidScene(name);
+            if (is_valid != ErrorType::Null) {
+                WriteError(is_valid);
+                return;
+            }
+
+            for (auto scene : scenes) {
+                if (scene.scene_name == name) {
+                    scene.ShowScene();
+                    return;
+                }
+            }
+            WriteError(ErrorType::FilenameNotFound);
+        }
+
+        // Look through saved scenes and list all names.
+        void ListScenes() {
+            std::cout << '\n';
+            for (auto scene : scenes) {
+                std::cout << scene.scene_name << '\n';
+            }
+            std::cout << '\n';
+        }
+
+        // Deletes a scene object.
+        void DeleteScene(const std::string& name) {
+            for (int i = 0; i < scenes.size(); ++i) {
+                if (scenes[i].scene_name == name) {
+                    scenes.erase(scenes.begin() + i);
+                    break;
+                }
+            }
+        }
+
+    private:
+        
+
+};
 
 void Help() {
     std::ostringstream oss;
@@ -24,16 +129,16 @@ void Help() {
     std::cout << output;
 }
 
-// Creates a scene with default values.
-void NewScene(const std::string& name) {
+// Creates a scene file with default values.
+bool NewScene(const std::string& name) {
     // Check validity of name.
     if (name.empty()) {
         WriteError(ErrorType::FilenameEmpty);
-        return;
+        return false;
     }
     if (!IsValidFilename(name)) {
         WriteError(ErrorType::FilenameInvalid);
-        return;
+        return false;
     }
 
     // Attempt to create a new scene.
@@ -41,9 +146,11 @@ void NewScene(const std::string& name) {
 
     if (!result.HasValue()) {
         WriteError(result.Error());
-    } else {
-        std::cout << '\n' << name << " was successfully created.\n\n";
-    }
+        return false;
+    } 
+
+    std::cout << '\n' << name << " was successfully created.\n\n";
+    return true;
 }
 
 // Allows the user to edit a saved scene.
@@ -53,31 +160,9 @@ void EditScene(const std::string& name) {
         WriteError(is_valid);
         return;
     }
-
-    Scene scene = FileManager::LoadScene(name).Value();
+    // Scene scene = FileManager::LoadScene(name).Value();
 
     /// Edit stuff
-}
-
-// Look through saved scenes and list all names
-void ListScenes() {
-    
-    std::cout << '\n';
-    FileManager::PrintSceneNames();
-    std::cout << '\n';
-}
-
-// Show the details of a saved scene.
-void ShowScene(const std::string& name) {
-    ErrorType is_valid = IsValidScene(name);
-    if (is_valid != ErrorType::Null) {
-        WriteError(is_valid);
-        return;
-    }
-
-    Scene scene = FileManager::LoadScene(name).Value();
-
-    scene.ShowScene();
 }
 
 // Output a .ppm file to the Renders folder of a saved scene.
@@ -94,26 +179,33 @@ void RenderScene(const std::string& name) {
     std::cout << '\n';
 }
 
-// Delete a saved scene permanently.
-void DeleteScene(const std::string& name) {
+// Delete a saved scene file permanently.
+bool DeleteScene(const std::string& name) {
     // Check if scene exists.
     ErrorType is_valid = IsValidScene(name);
     if (is_valid != ErrorType::Null) {
         WriteError(is_valid);
-        return;
+        return false;
     }
-   
+
     // Attempt to delete scene.
     Result<void, ErrorType> result = FileManager::DeleteScene(name);
     if (!result.HasValue()) {
         WriteError(result.Error());
-    } else {
-        std::cout << '\n' << name << " was successfully deleted.\n\n";
-    }
+        return false;
+    } 
+
+    std::cout << '\n' << name << " was successfully deleted.\n\n";
+    return true;
 }
 
 // Main menu
 int main() {
+
+    // Load all scene data
+    // When we create a new scene, we add it to the scene data list, as well as a new file
+    // When we modify a scene, we do so in the scene data list, and then maybe replace the file contents with the data from the scene?
+    auto scenes = SceneData();
 
     bool running = true;
     while (running) {
@@ -133,18 +225,21 @@ int main() {
         }
         else if (user_input.starts_with("new ")) {
             std::string name = user_input.substr(4);
-            NewScene(name);
+            if (NewScene(name))
+                scenes.NewScene(name);
         }
         else if (user_input.starts_with("edit ")) {
-            std::string name = user_input.substr(4);
+            std::string name = user_input.substr(5);
             EditScene(name);
+            scenes.EditScene(name);
+            scenes = SceneData();
         }
         else if (user_input == "list") {
-            ListScenes();
+            scenes.ListScenes();
         }
         else if (user_input.starts_with("show ")) {
             std::string name = user_input.substr(5);
-            ShowScene(name);
+            scenes.ShowScene(name);
         }
         else if (user_input.starts_with("render ")) {
             std::string name = user_input.substr(7);
@@ -152,7 +247,8 @@ int main() {
         }
         else if (user_input.starts_with("delete ")) {
             std::string name = user_input.substr(7);
-            DeleteScene(name);
+            if (DeleteScene(name))
+                scenes.DeleteScene(name);
         }
         else {
             WriteError(ErrorType::UnknownCommand);

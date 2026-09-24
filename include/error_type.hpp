@@ -10,7 +10,8 @@ enum class ErrorType {
     FilenameNotFound, // File could not be found
     SceneAlreadyExists, // User tries to name a new scene after one that already exists
     SceneNotFound, // User tries to load/render a scene that doesn't exist
-    ReadingIssue // An issue occurred with file i/o
+    ReadingIssue, // An issue occurred with file i/o
+    InvalidObjectName 
 };
 
 #endif

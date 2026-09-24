@@ -18,14 +18,6 @@ namespace fs = std::filesystem;
 // Handles ALL file i/o
 class FileManager {
     public:
-
-        // Prints the name of all files (excluding file extensions) in the Scenes directory.
-        static void PrintSceneNames() {
-            for (const auto& entry : fs::directory_iterator("Data/Scenes")) {
-                std::cout << entry.path().stem().string() << '\n';
-            }  
-        }
-
         // Creates a new scene file in the Scenes directory.
         static Result<void, ErrorType> CreateScene(const std::string& name) {
             try {
@@ -79,6 +71,22 @@ class FileManager {
                 return true;
             }
             return false;
+        }
+
+        static Result<std::vector<Scene>, ErrorType> LoadScenes() {
+            std::vector<Scene> scenes;
+
+            for (const auto& entry : fs::directory_iterator("Data/Scenes")) {
+                std::string name = entry.path().stem().string();
+                Result<Scene, ErrorType> scene = LoadScene(name);
+
+                if (!scene.HasValue()) {
+                    // return Result<std::vector<Scene>, ErrorType>::Failure(ErrorType::FilenameNotFound);
+                    continue;
+                }
+                scenes.push_back(scene.Value());
+            } 
+            return Result<std::vector<Scene>, ErrorType>::Success(scenes);
         }
 
         // Returns a scene based on the contents of a scene file.
@@ -186,6 +194,22 @@ class FileManager {
                     WriteColour(output_file, pixel_color);
                 }
             }
+            return Result<void, ErrorType>::Success();
+        }
+
+        static Result<void, ErrorType> AddObjectToScene(const Scene& scene, const Hittable& object) {
+            fs::path filepath = fs::path("Data/Scenes") / (scene.scene_name + ".txt");
+            
+            // Open the file
+            std::ofstream file(filepath, std::ios::app);
+
+            if (!file) {
+                return Result<void, ErrorType>::Failure(ErrorType::FilenameNotFound); 
+            }
+
+            // if ()
+
+            // file << obj_info[0] << ' ' << obj_info[1];
             return Result<void, ErrorType>::Success();
         }
 

@@ -40,7 +40,11 @@ class Sphere : public Hittable {
             return true;
         }
 
-    private:
+        void ShowObject() override {
+            std::cout << "\nShow sphere\n";
+        }
+
+    // private:
         Point3 center;
         double radius;
 };

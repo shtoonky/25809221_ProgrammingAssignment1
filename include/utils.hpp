@@ -9,26 +9,16 @@
 #include <fstream>
 #include <vector>
 
-// Functions
+inline void WriteError(ErrorType error, bool editing = false) {
+    int indent {3};
+    const std::string prefix = editing ? std::string(indent, ' ') : "";
 
-// enum class ErrorType {
-//     Null,
-//     UnknownCommand,
-//     FilenameEmpty,
-//     FilenameInvalid,
-//     FilenameNotFound,
-//     SceneAlreadyExists,
-//     SceneNotFound,
-//     ReadingIssue
-// };
-
-inline void WriteError(ErrorType error) {
-    std::cout << "\nerror: ";
+    std::cout << '\n' << prefix << "error: ";
 
     switch (error) {
         case ErrorType::UnknownCommand:
             std::cout << "unknown command.\n";
-            std::cout << "see 'help'.\n";
+            std::cout << prefix << "see 'help'.\n";
             break;
         
         case ErrorType::FilenameEmpty:
@@ -37,7 +27,7 @@ inline void WriteError(ErrorType error) {
 
         case ErrorType::FilenameInvalid:
             std::cout << "filename is invalid.\n";
-            std::cout << "filenames must not contain special characters: <>:\"/\\|?* \n";
+            std::cout << prefix << "filenames must not contain special characters: <>:\"/\\|?* \n";
             break;
 
         case ErrorType::FilenameNotFound:
@@ -46,11 +36,16 @@ inline void WriteError(ErrorType error) {
 
         case ErrorType::SceneAlreadyExists:
             std::cout << "scene name already exists.\n";
-            std::cout << "scene names must be unique.\n";
+            std::cout << prefix << "scene names must be unique.\n";
             break;
 
         case ErrorType::ReadingIssue:
             std::cout << "something went wrong when trying to read a file.\n";
+            break;
+
+        case ErrorType::InvalidObjectName:
+            std::cout << "object has invalid type or name.\n";
+            break;
     }
     std::cout << '\n';
 }
@@ -85,6 +80,5 @@ inline bool IsValidFilename(const std::string& name) {
 
     return true;
 }
-
 
 #endif
