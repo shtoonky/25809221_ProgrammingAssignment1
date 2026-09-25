@@ -94,18 +94,28 @@ inline ErrorType IsValidNameForScene(const std::string& name) {
     return ErrorType::Null;
 }
 
-inline int IsObjectName(const std::string& user_input, const std::vector<std::string>& names) {
+inline bool IsObjectName(const std::string& user_input, const std::vector<std::string>& names) {
     for (auto name : names) {
         if (user_input.starts_with(name)) {
-            return name.length();
+            return true;
         } 
     }
-    return -1;
+    return false;
 }
 
 inline bool IsSceneSetting(const std::string& user_input, const std::vector<std::string>& scene_settings) {
     for (auto setting : scene_settings) {
         if (user_input.starts_with(setting)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+inline bool IsValidVariable(const std::string& user_input) {
+    std::vector<std::string> variables {"center","radius"};
+    for (auto var : variables) {
+        if (user_input == var) {
             return true;
         }
     }

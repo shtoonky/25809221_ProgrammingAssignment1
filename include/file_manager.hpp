@@ -81,7 +81,6 @@ class FileManager {
                 Result<Scene, ErrorType> scene = LoadScene(name);
 
                 if (!scene.HasValue()) {
-                    // return Result<std::vector<Scene>, ErrorType>::Failure(ErrorType::FilenameNotFound);
                     continue;
                 }
                 scenes.push_back(scene.Value());
@@ -122,10 +121,6 @@ class FileManager {
                         reading_objects = true;
                         continue;
                     }
-
-                    // if (separator == std::string::npos) {
-                    //     continue;
-                    // }
 
                     if (!reading_objects) {
                         if (separator == std::string::npos) {
@@ -182,19 +177,36 @@ class FileManager {
                 return Result<std::string, ErrorType>::Failure(ErrorType::ReadingIssue);
             }
 
-            output_file << "P3\n" << scene.image_width << ' ' << scene.cam.image_height << "\n255\n";
+            const Camera& cam = scene.cam;
 
-            for (int j = 0; j < scene.cam.image_height; j++) {
-                // std::clog << "\rScanlines remaining: " << (scene.image_height - j) << ' ' << std::flush;
+            output_file << "P3\n" << scene.image_width << ' ' << cam.GetImageHeight() << "\n255\n";
+
+            for (int j = 0; j < cam.GetImageHeight(); j++) {
+
+                std::clog << "\rScanlines remaining: " << (cam.GetImageHeight() - j) << ' ' << std::flush;
+
                 for (int i = 0; i < scene.image_width; i++) {
-                    auto pixel_center = scene.cam.pixel00_loc + (i * scene.cam.pixel_delta_u) + (j * scene.cam.pixel_delta_v);
-                    auto ray_direction = pixel_center - scene.cam.center;
-                    Ray r(scene.cam.center, ray_direction);
 
-                    Colour pixel_color = scene.cam.RayColour(r, scene.world);
-                    WriteColour(output_file, pixel_color);
+                    if (cam.samples_per_pixel == 0) {  
+                        auto pixel_center = cam.GetPixel00() + (i * cam.GetPixelDeltaU() + (j * cam.GetPixelDeltaV()));
+                        auto ray_direction = pixel_center - cam.GetCenter();
+                        Ray r(cam.GetCenter(), ray_direction);
+
+                        Colour pixel_color = cam.RayColour(r, scene.world);
+                        WriteColour(output_file, pixel_color);
+                    }
+                    else {
+                        Colour pixel_colour(0, 0, 0);
+
+                        for (int sample = 0; sample < cam.samples_per_pixel; sample++) {
+                            Ray r = cam.GetRay(i, j);
+                            pixel_colour += cam.RayColour(r, scene.world);
+                        }
+                        WriteColour(output_file, pixel_colour * cam.GetPixelSamplesScale());
+                    }
                 }
             }
+            std::clog << "\r                             ";
             return Result<std::string, ErrorType>::Success(output_dir);
         }
 

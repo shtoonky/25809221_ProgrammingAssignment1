@@ -1,6 +1,0 @@
-scene_name=scene
-aspect_ratio=1
-image_width=100
-samples_per_pixel=10
-
-[Objects]

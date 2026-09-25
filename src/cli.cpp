@@ -182,8 +182,8 @@ void CLI::EditScene(Scene& scene) {
     int indent {3};
     const std::string prefix = std::string(indent, ' ');
 
-    auto names = scene.GetObjectNames();
-    std::vector<std::string> scene_settings {"scene_name","aspect_ratio","image_width","antialiasing"};
+    std::vector<std::string> names = scene.GetObjectNames();
+    std::vector<std::string> scene_settings {"scene_name","aspect_ratio","image_width","anti_aliasing"};
 
     std::cout << '\n';
 
@@ -193,8 +193,6 @@ void CLI::EditScene(Scene& scene) {
 
         std::string user_input;
         std::getline(std::cin, user_input);
-
-        int input_object_name = IsObjectName(user_input, names);
 
         if (user_input.empty()) {
             continue;
@@ -236,7 +234,7 @@ void CLI::EditScene(Scene& scene) {
             std::cout << '\n' << prefix << object_name << " successfully added to " << scene.scene_name << "\n\n";
             names = scene.GetObjectNames();
         }
-        else if (input_object_name != -1) { // User is attempting to modify an object's value
+        else if (IsObjectName(user_input, names)) { // User is attempting to modify an object's value
 
             std::istringstream iss(user_input);
             std::string object_name;
@@ -252,19 +250,20 @@ void CLI::EditScene(Scene& scene) {
                 continue;
             }
 
-            shared_ptr<Hittable> obj;
+            if (!IsValidVariable(variable_name)) {
+                WriteError(ErrorType::UnknownCommand, true);
+                continue;
+            }
 
             for (auto& object : scene.world.objects) {
                 if (object->name == object_name) {
-                    obj = object;
+                    auto modify_result = scene.ModifyObject(object, variable_name, value);
+                    if (!modify_result.HasValue()) {
+                            WriteError(modify_result.Error(), true);
+                            continue;
+                    }
                     break;
                 }
-            }
-            auto modify_result = scene.ModifyObject(obj, variable_name, value);
-
-            if (!modify_result.HasValue()) {
-                WriteError(modify_result.Error(), true);
-                continue;
             }
 
             std::cout << '\n' << prefix << "Successfully modified " << object_name << "\n\n";
@@ -285,7 +284,10 @@ void CLI::EditScene(Scene& scene) {
 
             try {
                 if (setting_name == "scene_name") {
+                    std::string old_name(scene.scene_name);
                     scene.scene_name = value;
+                    FileManager::SaveScene(scene);
+                    FileManager::DeleteScene(old_name);
                 }
                 else if (setting_name == "aspect_ratio") {
                     scene.aspect_ratio = std::stod(value);
