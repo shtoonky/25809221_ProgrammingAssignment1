@@ -61,7 +61,9 @@ class Camera {
             HitRecord rec;
 
             if (world.Hit(r, Interval(0, infinity), rec)) {
-                return 0.5 * (rec.normal + Colour(1, 1, 1));
+                Vec3 direction = RandomOnHemisphere(rec.normal);
+                return 0.5 * RayColour(Ray(rec.p, direction), world);
+                // return 0.5 * (rec.normal + Colour(1, 1, 1));
             }
 
             Vec3 unit_direction = UnitVector(r.direction());
