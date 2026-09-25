@@ -43,6 +43,10 @@ inline void WriteError(ErrorType error, bool editing = false) {
             std::cout << "something went wrong when trying to read a file.\n";
             break;
 
+        case ErrorType::ObjectNameEmpty:
+            std::cout << "variable or value given cannot be empty.\n";
+            break;  
+
         case ErrorType::InvalidObjectName:
             std::cout << "object has invalid type or name.\n";
             break;
@@ -56,7 +60,11 @@ inline void WriteError(ErrorType error, bool editing = false) {
             break;  
 
         case ErrorType::InvalidValue:
-            std::cout << "value given is not applicable.\n";
+            std::cout << "variable or value given is not applicable.\n";
+            break;  
+
+        case ErrorType::EmptyValue:
+            std::cout << "variable or value given cannot be empty.\n";
             break;  
     }
     std::cout << '\n';

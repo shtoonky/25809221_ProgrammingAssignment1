@@ -21,7 +21,7 @@ class Scene {
 
         void Initialise();
 
-        void Show();
+        void Show(bool editing=false);
 
         bool HasObject(const std::string& name);
 

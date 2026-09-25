@@ -11,27 +11,29 @@ void Scene::Initialise() {
     cam.Initialise();
 }
 
-void Scene::Show() {
-    std::ostringstream oss;
+void Scene::Show(bool editing) {
     int width {15};
+    int indent {3};
+    const std::string prefix = (editing) ? std::string(indent, ' ') : "";
 
-    oss << "\n"
-    << std::left << std::setw(width) << "scene_name: " << scene_name << "\n"
-    << std::setw(width) << "aspect_ratio: " << aspect_ratio << "\n"
-    << std::setw(width) << "image_width: " << image_width << "\n"
-    << std::setw(width) << "anti_aliasing: " << samples_per_pixel << "\n\n";
+    std::cout << "\n"
+    << prefix << std::left 
+    << std::setw(width) << "scene_name: " << scene_name << "\n"
+    << prefix << std::setw(width) << "aspect_ratio: " << aspect_ratio << "\n"
+    << prefix << std::setw(width) << "image_width: " << image_width << "\n"
+    << prefix << std::setw(width) << "anti_aliasing: " << samples_per_pixel << "\n\n";
 
-    std::string output = oss.str();
-    std::cout << output;
+    // std::string output = oss.str();
+    // std::cout << output;
 
     if (world.objects.size() == 0) {
-        std::cout << "No objects in scene.\n\n";
+        std::cout << prefix <<  "No objects in scene.\n\n";
         return;
     }
 
-    std::cout << "scene_objects:\n";
+    std::cout << prefix <<  "scene_objects:\n";
     for (const auto& object : world.objects) {
-        std::cout << object->name << '\n';
+        std::cout << prefix <<  object->name << '\n';
     }
     std::cout << '\n';
 }

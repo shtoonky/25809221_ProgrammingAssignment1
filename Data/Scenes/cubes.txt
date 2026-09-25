@@ -1,4 +1,4 @@
-scene_name=balls
+scene_name=cubes
 aspect_ratio=1.78
 image_width=10000
 samples_per_pixel=20

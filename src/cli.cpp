@@ -209,7 +209,7 @@ void CLI::EditScene(Scene& scene) {
             std::string obj_info = user_input.substr(4);
 
             if (obj_info.empty()) {
-                WriteError(ErrorType::FilenameEmpty, true);
+                WriteError(ErrorType::ObjectNameEmpty, true);
                 continue;
             }
 
@@ -246,13 +246,12 @@ void CLI::EditScene(Scene& scene) {
             value.erase(0, value.find_first_not_of(' '));
 
             if (variable_name.empty() || value.empty()) {
-                WriteError(ErrorType::UnknownCommand, true);
+                WriteError(ErrorType::EmptyValue, true);
                 continue;
             }
 
             if (!IsValidVariable(variable_name)) {
-                WriteError(ErrorType::UnknownCommand, true);
-                continue;
+                WriteError(ErrorType::InvalidValue, true);
             }
 
             for (auto& object : scene.world.objects) {
@@ -278,7 +277,7 @@ void CLI::EditScene(Scene& scene) {
             value.erase(0, value.find_first_not_of(' '));
 
             if (setting_name.empty() || value.empty()) {
-                WriteError(ErrorType::UnknownCommand, true);
+                WriteError(ErrorType::EmptyValue, true);
                 continue;  
             }
 
@@ -368,6 +367,22 @@ void CLI::EditScene(Scene& scene) {
 
             std::cout << '\n' << prefix << obj_name << " successfully delete from " << scene.scene_name << "\n\n";
             names = scene.GetObjectNames();
+        }
+        else if (user_input == "show") {
+            scene.Show(true);
+        }
+        else if (user_input == "render") {
+            scene.Initialise();
+
+            auto render_result = FileManager::WriteRender(scene);
+            
+            if (!render_result.HasValue()) {
+                WriteError(render_result.Error(), true);
+                continue;
+            }
+
+            std::cout << '\n' << prefix << scene.scene_name << " successfully rendered.\n";
+            std::cout << prefix << "find the .ppm file at " << render_result.Value() << "\n\n"; 
         }
         else {
             WriteError(ErrorType::UnknownCommand, true);
