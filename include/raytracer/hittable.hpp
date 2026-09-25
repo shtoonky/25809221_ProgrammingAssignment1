@@ -2,6 +2,7 @@
 #define HITTABLE_HPP
 
 #include "ray.hpp"
+#include "interval.hpp"
 
 class HitRecord {
     public:
@@ -30,7 +31,9 @@ class Hittable {
 
         // Hittable(const std::string& name) : name(name) {}
 
-        virtual bool Hit(const Ray& r, double ray_tmin, double ray_tmax, HitRecord& rec) const = 0;
+        // virtual bool Hit(const Ray& r, double ray_tmin, double ray_tmax, HitRecord& rec) const = 0;
+        virtual bool Hit(const Ray& r, Interval ray_t, HitRecord& rec) const = 0;
+
 
         virtual void ShowObject() {};
 };

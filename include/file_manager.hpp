@@ -1,11 +1,9 @@
 #ifndef FILE_MANAGER_HPP
 #define FILE_MANAGER_HPP
 
-#include "result.hpp"
 #include "scene.hpp"
-#include "error_type.hpp"
 #include "raytracer/sphere.hpp"
-// #include "raytracer/hittable_list.hpp"
+#include "raytracer/colour.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -186,17 +184,17 @@ class FileManager {
                 std::clog << "\rScanlines remaining: " << (cam.GetImageHeight() - j) << ' ' << std::flush;
 
                 for (int i = 0; i < scene.image_width; i++) {
-
+                    Colour pixel_colour = Colour (0, 0, 0);
                     if (cam.samples_per_pixel == 0) {  
                         auto pixel_center = cam.GetPixel00() + (i * cam.GetPixelDeltaU() + (j * cam.GetPixelDeltaV()));
                         auto ray_direction = pixel_center - cam.GetCenter();
                         Ray r(cam.GetCenter(), ray_direction);
 
-                        Colour pixel_color = cam.RayColour(r, scene.world);
-                        WriteColour(output_file, pixel_color);
+                        pixel_colour = cam.RayColour(r, scene.world);
+                        WriteColour(output_file, pixel_colour);
                     }
                     else {
-                        Colour pixel_colour(0, 0, 0);
+                        pixel_colour = Colour(0, 0, 0);
 
                         for (int sample = 0; sample < cam.samples_per_pixel; sample++) {
                             Ray r = cam.GetRay(i, j);

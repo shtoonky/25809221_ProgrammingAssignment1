@@ -33,10 +33,5 @@ inline double RandomDouble(double min, double max) {
     return min + (max - min) * RandomDouble();
 }
 
-// Common Headers
-
-#include "colour.hpp"
-#include "ray.hpp"
-#include "vec3.hpp"
 
 #endif

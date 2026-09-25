@@ -14,6 +14,10 @@ class Interval {
         //     return max - min;
         // }
 
+        bool Surrounds(double x) const {
+            return min < x && x < max;
+        }
+
         double Clamp(double x) const {
             if (x < min) return min;
             if (x > max) return max;

@@ -9,7 +9,7 @@ class Sphere : public Hittable {
         Sphere(const Point3& center, double radius) : Hittable("sphere"), center(center), radius(std::fmax(0, radius)) {}
         Sphere(std::string name, const Point3& center, double radius) : Hittable(name), center(center), radius(std::fmax(0, radius)) {}
 
-        bool Hit(const Ray& r, double ray_tmin, double ray_tmax, HitRecord& rec) const override {
+        bool Hit(const Ray& r, Interval ray_t, HitRecord& rec) const override {
             Vec3 oc = center - r.origin();
             auto a = r.direction().length_squared();
             auto h = Dot(r.direction(), oc);
@@ -24,9 +24,9 @@ class Sphere : public Hittable {
 
             // Find the nearest root that lies in the acceptable range.
             auto root = (h - sqrtd) / a;
-            if (root <= ray_tmin || ray_tmax <= root ) {
+            if (!ray_t.Surrounds(root)) {
                 root = (h + sqrtd) / a;
-                if (root <= ray_tmin || ray_tmax <= root ) {
+                if (!ray_t.Surrounds(root)) {
                     return false;
                 }
             }

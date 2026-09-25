@@ -1,9 +1,8 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
-// #include "colour.hpp"
 #include "rtweekend_utils.hpp"
-// #include "ray.hpp"
+#include "colour.hpp"
 #include "hittable.hpp"
 
 class Camera {
@@ -61,7 +60,7 @@ class Camera {
         Colour RayColour(const Ray& r, const Hittable& world) const {
             HitRecord rec;
 
-            if (world.Hit(r, 0, infinity, rec)) {
+            if (world.Hit(r, Interval(0, infinity), rec)) {
                 return 0.5 * (rec.normal + Colour(1, 1, 1));
             }
 
