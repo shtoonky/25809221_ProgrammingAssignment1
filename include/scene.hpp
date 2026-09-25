@@ -15,6 +15,10 @@ class Scene {
         double aspect_ratio = 1.0;
         int image_width = 100;
         int samples_per_pixel = 10;
+        int max_depth = 10;
+
+        Colour skybox_colour_i = Colour(0, 0, 0);
+        Colour skybox_colour_j = Colour(1, 1, 1);
 
         HittableList world;
         Camera cam;

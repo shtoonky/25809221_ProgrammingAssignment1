@@ -40,7 +40,7 @@ void CLI::RunCLI(SceneData& scenes) {
             }
 
             Scene new_scene(name);
-            auto create_file_result = FileManager::CreateScene(new_scene);
+            auto create_file_result = FileManager::SaveScene(new_scene);
 
             if (!create_file_result.HasValue()) {
                 WriteError(create_file_result.Error());
@@ -183,7 +183,7 @@ void CLI::EditScene(Scene& scene) {
     const std::string prefix = std::string(indent, ' ');
 
     std::vector<std::string> names = scene.GetObjectNames();
-    std::vector<std::string> scene_settings {"scene_name","aspect_ratio","image_width","anti_aliasing"};
+    std::vector<std::string> scene_settings {"scene_name","aspect_ratio","image_width","anti_aliasing","max_depth","skybox_colour_i","skybox_colour_j"};
 
     std::cout << '\n';
 
@@ -296,6 +296,39 @@ void CLI::EditScene(Scene& scene) {
                 }
                 else if (setting_name == "anti_aliasing") {
                     scene.samples_per_pixel = std::stoi(value);
+                }
+                else if (setting_name == "max_depth") {
+                    scene.max_depth = std::stoi(value);
+                }
+                else if (setting_name == "skybox_colour_i") {
+                    std::istringstream value_stream(value);
+                    double x, y, z;
+
+                    if (!(value_stream >> x >> y >> z)) {
+                        continue;
+                    }
+
+                    if (!IsValidColourValue(x) || !IsValidColourValue(y)|| !IsValidColourValue(z)) {
+                        WriteError(ErrorType::InvalidColour, true);
+                        continue;
+                    }
+
+                    scene.skybox_colour_i = Colour(x, y, z);
+                }
+                else if (setting_name == "skybox_colour_j") {
+                    std::istringstream value_stream(value);
+                    double x, y, z;
+
+                    if (!(value_stream >> x >> y >> z)) {
+                        continue;
+                    }
+
+                    if (!IsValidColourValue(x) || !IsValidColourValue(y)|| !IsValidColourValue(z)) {
+                        WriteError(ErrorType::InvalidColour, true);
+                        continue;
+                    }
+
+                    scene.skybox_colour_j = Colour(x, y, z);
                 }
                 else {
                     WriteError(ErrorType::UnknownCommand, true);

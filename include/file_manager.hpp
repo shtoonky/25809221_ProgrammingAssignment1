@@ -16,36 +16,6 @@ namespace fs = std::filesystem;
 // Handles ALL file i/o
 class FileManager {
     public:
-        // Creates a new scene file in the Scenes directory.
-        static Result<void, ErrorType> CreateScene(const Scene& scene) {
-            try {
-                fs::path filepath = fs::path("Data/Scenes") / (scene.scene_name + ".txt");
-
-                if (fs::exists(filepath)) {
-                    return Result<void, ErrorType>::Failure(ErrorType::SceneAlreadyExists); 
-                }
-                
-                // Open the file
-                std::ofstream file(filepath);
-
-                if (!file) {
-                    return Result<void, ErrorType>::Failure(ErrorType::FilenameNotFound); 
-                }
-
-                // Write default data.
-                file << "scene_name=" << scene.scene_name << '\n';
-                file << "aspect_ratio=" << scene.aspect_ratio << '\n';
-                file << "image_width=" << scene.image_width << '\n';
-                file << "samples_per_pixel=" << scene.samples_per_pixel << "\n\n";
-                file << "[Objects]\n";
-
-                return Result<void, ErrorType>::Success();
-            }
-            catch (const fs::filesystem_error& e) {
-                return Result<void, ErrorType>::Failure(ErrorType::ReadingIssue); 
-            } 
-        }
-
         // Deletes a scene file in the Scene directory.
         static Result<void, ErrorType> DeleteScene(const std::string& name) {
             try {
@@ -138,7 +108,32 @@ class FileManager {
                         }
                         else if (key == "samples_per_pixel") {
                             scene.samples_per_pixel = std::stoi(value);
-                        }                        
+                        }
+                        else if (key == "max_depth") {
+                            scene.max_depth = std::stoi(value);
+                        }
+                        else if (key == "skybox_colour_i") {
+                            std::vector<std::string> colour;
+                            std::stringstream ss(value);
+                            std::string component;
+
+                            while (std::getline(ss, component, ',')){
+                                colour.push_back(component);
+                            }
+
+                            scene.skybox_colour_j = Colour(std::stod(colour[0]), std::stod(colour[1]), std::stod(colour[2]));
+                        }
+                        else if (key == "skybox_colour_j") {
+                            std::vector<std::string> colour;
+                            std::stringstream ss(value);
+                            std::string component;
+
+                            while (std::getline(ss, component, ',')){
+                                colour.push_back(component);
+                            }
+
+                            scene.skybox_colour_j = Colour(std::stod(colour[0]), std::stod(colour[1]), std::stod(colour[2]));
+                        }
                     }
                     else {
                         std::vector<std::string> object_data;
@@ -164,6 +159,10 @@ class FileManager {
             catch (const fs::filesystem_error& e) {
                 return Result<Scene, ErrorType>::Failure(ErrorType::ReadingIssue);
             }
+            catch (const std::exception& e) {
+                std::cerr << "error loading scene: " << e.what() << '\n';
+                return Result<Scene, ErrorType>::Failure(ErrorType::ReadingIssue);
+            }
         }
 
         // Creates a ppm file based on scene data.
@@ -176,6 +175,10 @@ class FileManager {
             }
 
             const Camera& cam = scene.cam;
+
+            if (cam.image_width <= 0) {
+                return Result<std::string, ErrorType>::Failure(ErrorType::InvalidSceneFile);
+            }
 
             output_file << "P3\n" << scene.image_width << ' ' << cam.GetImageHeight() << "\n255\n";
 
@@ -190,7 +193,7 @@ class FileManager {
                         auto ray_direction = pixel_center - cam.GetCenter();
                         Ray r(cam.GetCenter(), ray_direction);
 
-                        pixel_colour = cam.RayColour(r, scene.world);
+                        pixel_colour = cam.RayColour(r, cam.max_depth, scene.world);
                         WriteColour(output_file, pixel_colour);
                     }
                     else {
@@ -198,7 +201,7 @@ class FileManager {
 
                         for (int sample = 0; sample < cam.samples_per_pixel; sample++) {
                             Ray r = cam.GetRay(i, j);
-                            pixel_colour += cam.RayColour(r, scene.world);
+                            pixel_colour += cam.RayColour(r, cam.max_depth, scene.world);
                         }
                         WriteColour(output_file, pixel_colour * cam.GetPixelSamplesScale());
                     }
@@ -210,6 +213,13 @@ class FileManager {
 
         // Write a scene's contents to memory.
         static Result<void, ErrorType> SaveScene(const Scene& scene) {
+
+            auto GetColour = [](Colour colour){
+                std::ostringstream out;
+                out << colour.x() << ',' << colour.y() << ',' << colour.z();
+                return out.str();
+            };
+
             std::ofstream output_file("Data/Scenes/" + scene.scene_name + ".txt");
 
             if (!output_file.is_open()) {
@@ -219,7 +229,10 @@ class FileManager {
             output_file << "scene_name=" << scene.scene_name << '\n';
             output_file << "aspect_ratio=" << scene.aspect_ratio << '\n';
             output_file << "image_width=" << scene.image_width << '\n';
-            output_file << "samples_per_pixel=" << scene.samples_per_pixel << "\n\n";
+            output_file << "samples_per_pixel=" << scene.samples_per_pixel << '\n';
+            output_file << "max_depth=" << scene.max_depth << '\n';
+            output_file << "skybox_colour_i=" << GetColour(scene.skybox_colour_i) << '\n';
+            output_file << "skybox_colour_j=" << GetColour(scene.skybox_colour_j) << "\n\n";
             output_file << "[Objects]\n";
 
             for (const auto& object : scene.world.objects) {

@@ -1,8 +1,0 @@
-scene_name=cubes
-aspect_ratio=1.78
-image_width=10000
-samples_per_pixel=20
-
-[Objects]
-sphere,sphere1,-0.5,-0.5,-3,1
-sphere,sphere0,0.5,0.5,-4,0.5

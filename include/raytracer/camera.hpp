@@ -7,9 +7,13 @@
 
 class Camera {
     public:
-        double aspect_ratio = 1.0;
-        int image_width = 100;
-        int samples_per_pixel = 10;
+        double aspect_ratio;
+        int image_width;
+        int samples_per_pixel;
+        int max_depth; // Maximum number of ray bounces into scene
+
+        Colour skybox_colour_i = Colour(0, 0, 0);
+        Colour skybox_colour_j = Colour(1, 1, 1);
         
         Camera() {}
         Camera(double ar, int w) : aspect_ratio(ar), image_width(w) {}
@@ -57,18 +61,21 @@ class Camera {
             return Vec3(RandomDouble() - 0.5, RandomDouble() - 0.5, 0);
         }
 
-        Colour RayColour(const Ray& r, const Hittable& world) const {
+        Colour RayColour(const Ray& r, int depth, const Hittable& world) const {
             HitRecord rec;
 
-            if (world.Hit(r, Interval(0, infinity), rec)) {
+            if (depth <= 0)
+                return Colour(0, 0, 0);
+
+            if (world.Hit(r, Interval(0.001, infinity), rec)) {
                 Vec3 direction = RandomOnHemisphere(rec.normal);
-                return 0.5 * RayColour(Ray(rec.p, direction), world);
+                return 0.5 * RayColour(Ray(rec.p, direction), depth - 1, world);
                 // return 0.5 * (rec.normal + Colour(1, 1, 1));
             }
 
             Vec3 unit_direction = UnitVector(r.direction());
             auto a = 0.5 * (unit_direction.y() + 1.0);
-            return (1.0 - a) * Colour(1.0, 1.0, 1.0) + a * Colour(0.5, 0.7, 1.0);
+            return (1.0 - a) * skybox_colour_i + a * skybox_colour_j;
         }
 
         // Getters :|

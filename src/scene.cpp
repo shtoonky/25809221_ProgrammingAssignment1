@@ -8,6 +8,11 @@ void Scene::Initialise() {
     cam.aspect_ratio = aspect_ratio;
     cam.image_width = image_width;
     cam.samples_per_pixel = samples_per_pixel;
+    cam.max_depth = max_depth;
+
+    cam.skybox_colour_i = skybox_colour_i;
+    cam.skybox_colour_j = skybox_colour_j;
+
     cam.Initialise();
 }
 
@@ -21,10 +26,10 @@ void Scene::Show(bool editing) {
     << std::setw(width) << "scene_name: " << scene_name << "\n"
     << prefix << std::setw(width) << "aspect_ratio: " << aspect_ratio << "\n"
     << prefix << std::setw(width) << "image_width: " << image_width << "\n"
-    << prefix << std::setw(width) << "anti_aliasing: " << samples_per_pixel << "\n\n";
-
-    // std::string output = oss.str();
-    // std::cout << output;
+    << prefix << std::setw(width) << "anti_aliasing: " << samples_per_pixel << "\n"
+    << prefix << std::setw(width) << "max_depth: " << max_depth << "\n"
+    << prefix << std::setw(width) << "skybox_colour_i: " << skybox_colour_i << "\n"
+    << prefix << std::setw(width) << "skybox_colour_j: " << skybox_colour_j << "\n\n";
 
     if (world.objects.size() == 0) {
         std::cout << prefix <<  "No objects in scene.\n\n";

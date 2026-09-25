@@ -66,6 +66,15 @@ inline void WriteError(ErrorType error, bool editing = false) {
         case ErrorType::EmptyValue:
             std::cout << "variable or value given cannot be empty.\n";
             break;  
+
+        case ErrorType::InvalidSceneFile:
+            std::cout << "scene file is unable to be rendered.\n";
+            break;  
+
+        case ErrorType::InvalidColour:
+            std::cout << "colour is invalud.\n";
+            std::cout << prefix << "rgb values must be in range [0, 1].\n";
+            break;
     }
     std::cout << '\n';
 }
@@ -128,6 +137,14 @@ inline bool IsValidVariable(const std::string& user_input) {
         }
     }
     return false;
+}
+
+inline bool IsValidColourValue(const double& x) {
+    if (x < 0 || x > 1) {
+        return false;
+    }
+
+    return true;
 }
 
 #endif

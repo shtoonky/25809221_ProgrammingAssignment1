@@ -16,7 +16,9 @@ enum class ErrorType {
     ObjectNameEmpty,
     ObjectNotFound, // Instance of an object could not be found by a method
     InvalidValue, // Value given to scene variable is invalid
-    EmptyValue
+    EmptyValue,
+    InvalidSceneFile,
+    InvalidColour
 };
 
 #endif
