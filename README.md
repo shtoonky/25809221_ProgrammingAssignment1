@@ -1,13 +1,14 @@
-<h1>**25809221_ProgrammingAssignment1**</h1>
+<h1>25809221_ProgrammingAssignment1</h1>
 
-<h2>**Description**</h2>
+<h2>Description</h2>
  A C++ ray tracer with a command-line scene editor.
 
  Users can create, modify and delete objects within a scene and render the resulting scene to a .ppm file.
  The .ppm output can then be converted to another image format using image-conversion software of the user's choice.
 
- <h2>**How To Build/Run**</h2>
-The program require **C++20**.
+ <h2>How To Build/Run</h2>
+
+The program requires **C++20**.
 
 Build using:
 **g++ -std=c++20 -Iinclude src/main.cpp src/cli.cpp src/scene.cpp -o 25809221_ProgrammingAssignment1**
@@ -19,9 +20,9 @@ To begin using the program, enter the command 'help'.
 Note that when running the 'show' command, variable names are as shown and should be used when the user tries to
 modify these properties.
 
-<h2>**Additional Information**</h2>
+<h2>Additional Information</h2>
 
-<h3>**Viewing Rendered Images**</h3>
+<h3>Viewing Rendered Images</h3>
 
 The rendered .ppm files can be converted to a standard image format using image-conversion software.
 
@@ -31,22 +32,19 @@ I have been using ImageMagick for this purpose:
 
 For example:
 
-    *magic <scene_name>.ppm <image_name>.png*
+    Magick <scene_name>.ppm <image_name>.png
 
-<h3>**3D Worldspace**</h3>
+<h3>3D Worldspace</h3>
 
 Positions can be interpreted as (x, y, z) in a 3D space.
 
-Positive x goes right.
-Negative x goes left.
+    Positive x goes right. Negative x goes left.
 
-Positive y goes up.
-Negative y goes down.
+    Positive y goes up. Negative y goes down.
 
-Positive z goes towards the camera.
-Negative z goes away from the camera.
+    Positive z goes towards the camera. Negative z goes away from the camera.
 
-<h3>**Camera**</h3>
+<h3>Camera</h3>
 
 The camera is positioned at: 
 
@@ -56,7 +54,7 @@ and faces forwards in the **negative z direction**.
 
 If an object does not appear in the rendered image, check that it's position is within the camera's view.
 
-<h3>**Scene and Object Information**</h3>
+<h3>Scene and Object Information</h3>
 
 Scene properties can be specified (while editing) using:
 
@@ -89,12 +87,12 @@ Spheres have default values:
 
 Note that object_name cannot be changed after an object has been created, and may not contain spaces.
 
-<h3>**Saving Scenes**</h3>
+<h3>Saving Scenes</h3>
 
 Scene changes are saved automatically. However, scene files update when the user exits scene editing. Do not attempt to
 close the program while editing a scene, as the program may behave unexpectedly.
 
-<h3>**Scene File Formatting**</h3>
+<h3>Scene File Formatting</h3>
 
 Scene data is stored in .txt files in a specific format. The following is an example of a *newly created scene* with
 default values:
@@ -124,41 +122,11 @@ The following is an example of a *modified scene* with added objects:
     sphere,sphere1,0.9,0.9,-2,0.9
     sphere,sphere2,0.1,0.4,-4.5,1.3
 
-<h3>**Potential Issues**</h3>
+<h3>Potential Issues</h3>
 
 If the program crashes when it is run, there may be an error in the formatting of one the scene files.
 
-If this occues, either delete the affect .txt scene files or manually correct its formatting.
+If this occurs, either delete the affect .txt scene files or manually correct its formatting.
 
 Generally, scene.txt files should not be edited manually, as incorrect formatting may cause the program to
 behave unexpectedly or crash.
-
-
-    - To see rendered images, the outputted .ppm files need to be converted to any visible image format. This can be done with
-    any software the user desires. The one I've been using is ImageMagick (AKA Magick: https://imagemagick.org/#gsc.tab=0) 
-    using *Magick <scene_name>.ppm <image_name>.png*
-
-    - Note that the position of the 'camera' is (0, 0, 0) facing forwards to the *negative z direction*. If you cannot see
-      your object, this is most likely why.
-
-    - Object information:
-        > Scenes:
-            > scene_name: <new scene_name>
-            > aspect_ratio: <double>
-            > image_width: <int>
-            > anti_aliasing: <int>
-            > max_depth: <int>
-            > skybox_colour_i: <double> <double> <double>
-            > skybox_colour_j: <double> <double> <double>
-
-        > Spheres:
-            > radius: <double>
-            > center: <double> <double> <double>
-        
-        - Note: object_name cannot be changed, and may not contain spaces.
-
-    - Potential issues:
-        > If the program crashes when you run it, something is wrong with the formatting in one of the scene files. 
-        Either delete those files, or try to fix it manually. Generally though, do not touch .txt scene files, or you risk
-        breaking the program.
-
