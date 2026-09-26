@@ -107,6 +107,8 @@ default values:
 
     [Objects]
 
+<img width="100" height="100" alt="scene" src="https://github.com/user-attachments/assets/719908ff-d32b-45c0-bb36-f281b32d5476" />
+
 The following is an example of a *modified scene* with added objects:
 
     scene_name=scene_mod
@@ -121,6 +123,8 @@ The following is an example of a *modified scene* with added objects:
     sphere,sphere0,-0.5,-0.3,-1,0.2
     sphere,sphere1,0.9,0.9,-2,0.9
     sphere,sphere2,0.1,0.4,-4.5,1.3
+
+<img width="450" height="450" alt="scene9" src="https://github.com/user-attachments/assets/bc2051ef-fd6c-4d98-8f0a-ac2889e17ffd" />
 
 <h3>Potential Issues</h3>
 
