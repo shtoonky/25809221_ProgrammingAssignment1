@@ -134,3 +134,12 @@ If this occurs, either delete the affect .txt scene files or manually correct it
 
 Generally, scene.txt files should not be edited manually, as incorrect formatting may cause the program to
 behave unexpectedly or crash.
+
+<h2>Acknowledgements</h2>
+
+The raytracing implementation was developed while following *Ray Tracing in One Weekend* by Peter Shirly. The book was used as a
+learning resource for the core raytracing concepts and implementation.
+
+The original book and further information can be fount at:
+
+    https://raytracing.github.io/books/RayTracingInOneWeekend.html
