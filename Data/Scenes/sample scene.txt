@@ -1,0 +1,10 @@
+scene_name=sample scene
+aspect_ratio=1
+image_width=350
+samples_per_pixel=45
+max_depth=20
+skybox_colour_i=0.2,0.7,1
+skybox_colour_j=1,1,1
+
+[Objects]
+sphere,moo,0,0,-1,0.5

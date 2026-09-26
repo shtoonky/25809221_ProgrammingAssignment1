@@ -10,7 +10,7 @@ int main() {
     auto result = FileManager::LoadScenes();
 
     if (!result.HasValue()) {
-        // error
+        return -1;
     } else {
         data.scenes = result.Value();
     }

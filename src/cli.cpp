@@ -231,7 +231,7 @@ void CLI::EditScene(Scene& scene) {
                 continue;
             }
 
-            std::cout << '\n' << prefix << object_name << " successfully added to " << scene.scene_name << "\n\n";
+            std::cout << '\n' << prefix << object_name << " successfully added to " << scene.scene_name << ".\n\n";
             names = scene.GetObjectNames();
         }
         else if (IsObjectName(user_input, names)) { // User is attempting to modify an object's value
@@ -271,7 +271,7 @@ void CLI::EditScene(Scene& scene) {
             }
 
             if (modified) {
-                std::cout << '\n' << prefix << "Successfully modified " << object_name << "\n\n";
+                std::cout << '\n' << prefix << "Successfully modified " << object_name << ".\n\n";
             }
         }
         else if (IsSceneSetting(user_input, scene_settings)) { // User is attempting to modify scene settings
@@ -420,7 +420,7 @@ void CLI::EditScene(Scene& scene) {
                 continue;
             }
 
-            std::cout << '\n' << prefix << obj_name << " successfully delete from " << scene.scene_name << "\n\n";
+            std::cout << '\n' << prefix << obj_name << " successfully delete from " << scene.scene_name << ".\n\n";
             names = scene.GetObjectNames();
         }
         else if (user_input == "show") {
