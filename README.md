@@ -114,8 +114,8 @@ The following is an example of a *modified scene* with added objects:
     scene_name=scene_mod
     aspect_ratio=1
     image_width=450
-    samples_per_pixel=10
-    max_depth=10
+    samples_per_pixel=70
+    max_depth=20
     skybox_colour_i=0.7,0.2,1
     skybox_colour_j=0.2,0.5,0.7
 
@@ -124,7 +124,7 @@ The following is an example of a *modified scene* with added objects:
     sphere,sphere1,0.9,0.9,-2,0.9
     sphere,sphere2,0.1,0.4,-4.5,1.3
 
-<img width="450" height="450" alt="scene1" src="https://github.com/user-attachments/assets/5ca3ba4c-1eff-4fb3-a04e-837063bde18b" />
+<img width="450" height="450" alt="scene2" src="https://github.com/user-attachments/assets/79d8e023-0e0e-40a9-93e0-c5509eb7cf4d" />
 
 <h3>Potential Issues</h3>
 
