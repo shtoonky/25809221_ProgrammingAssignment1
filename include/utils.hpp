@@ -72,8 +72,12 @@ inline void WriteError(ErrorType error, bool editing = false) {
             break;  
 
         case ErrorType::InvalidColour:
-            std::cout << "colour is invalud.\n";
+            std::cout << "colour is invalid.\n";
             std::cout << prefix << "rgb values must be in range [0, 1].\n";
+            break;
+
+        case ErrorType::NegativeValue:
+            std::cout << "value cannot be less than 0.\n";
             break;
     }
     std::cout << '\n';
@@ -122,7 +126,7 @@ inline bool IsObjectName(const std::string& user_input, const std::vector<std::s
 
 inline bool IsSceneSetting(const std::string& user_input, const std::vector<std::string>& scene_settings) {
     for (auto setting : scene_settings) {
-        if (user_input.starts_with(setting)) {
+        if (user_input.starts_with(setting + " ")) {
             return true;
         }
     }

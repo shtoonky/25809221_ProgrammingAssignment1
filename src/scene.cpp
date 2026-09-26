@@ -102,7 +102,16 @@ Result<void, ErrorType> Scene::RemoveObject(const std::string& name) {
 Result<void, ErrorType> Scene::ModifyObject(shared_ptr<Hittable>& object,const std::string& variable,const std::string& value) {
     if (auto sphere = std::dynamic_pointer_cast<Sphere>(object)) {
         if (variable == "radius") {
-            sphere->radius = std::stod(value);
+            try {
+                double radius = std::stod(value);
+                if (radius < 0) 
+                    return Result<void, ErrorType>::Failure(ErrorType::NegativeValue);
+                sphere->radius = radius;
+            }
+            catch (const std::exception& e) {
+                return Result<void, ErrorType>::Failure(ErrorType::InvalidValue);
+            }
+            return Result<void, ErrorType>::Success();
         } 
         else if (variable == "center") {
             std::istringstream value_stream(value);
@@ -111,13 +120,15 @@ Result<void, ErrorType> Scene::ModifyObject(shared_ptr<Hittable>& object,const s
             if (!(value_stream >> x >> y >> z)) {
                 return Result<void, ErrorType>::Failure(ErrorType::UnknownCommand);
             }
-            sphere->center = Point3(x, y, z);
+
+            sphere->center = Point3(x, y, z);\
+            return Result<void, ErrorType>::Success();
         }
     } 
     else {
         return Result<void, ErrorType>::Failure(ErrorType::ObjectNotFound);
     }
-    return Result<void, ErrorType>::Success();
+    return Result<void, ErrorType>::Failure(ErrorType::InvalidValue);
 }
 
 std::vector<std::string> Scene::GetObjectNames() {

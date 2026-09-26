@@ -252,20 +252,27 @@ void CLI::EditScene(Scene& scene) {
 
             if (!IsValidVariable(variable_name)) {
                 WriteError(ErrorType::InvalidValue, true);
+                continue;
             }
+            
+            bool modified = false;
 
             for (auto& object : scene.world.objects) {
                 if (object->name == object_name) {
                     auto modify_result = scene.ModifyObject(object, variable_name, value);
                     if (!modify_result.HasValue()) {
                             WriteError(modify_result.Error(), true);
-                            continue;
+                            break;
                     }
+
+                    modified = true;
                     break;
                 }
             }
 
-            std::cout << '\n' << prefix << "Successfully modified " << object_name << "\n\n";
+            if (modified) {
+                std::cout << '\n' << prefix << "Successfully modified " << object_name << "\n\n";
+            }
         }
         else if (IsSceneSetting(user_input, scene_settings)) { // User is attempting to modify scene settings
             std::istringstream iss(user_input);
@@ -289,13 +296,28 @@ void CLI::EditScene(Scene& scene) {
                     FileManager::DeleteScene(old_name);
                 }
                 else if (setting_name == "aspect_ratio") {
-                    scene.aspect_ratio = std::stod(value);
+                    double ratio = std::stod(value);
+                    if (ratio < 0) {
+                        WriteError(ErrorType::NegativeValue);
+                        continue;
+                    }
+                    scene.aspect_ratio = ratio;
                 }
                 else if (setting_name == "image_width") {
-                    scene.image_width = std::stoi(value);
+                    int width = std::stoi(value);
+                    if (width < 0) {
+                        WriteError(ErrorType::NegativeValue);
+                        continue;
+                    }
+                    scene.image_width = width;
                 }
                 else if (setting_name == "anti_aliasing") {
-                    scene.samples_per_pixel = std::stoi(value);
+                    int aliasing = std::stoi(value);
+                    if (aliasing < 0) {
+                        WriteError(ErrorType::NegativeValue);
+                        continue;
+                    }
+                    scene.samples_per_pixel = aliasing;
                 }
                 else if (setting_name == "max_depth") {
                     scene.max_depth = std::stoi(value);
@@ -417,6 +439,27 @@ void CLI::EditScene(Scene& scene) {
             std::cout << '\n' << prefix << scene.scene_name << " successfully rendered.\n";
             std::cout << prefix << "find the .ppm file at " << render_result.Value() << "\n\n"; 
         }
+        else if (user_input == "aspect_ratio") {
+            std::cout << '\n' << prefix << "aspect_ratio: proportion between image_width and the rendered image's height.\n\n";
+        }
+        else if (user_input == "image_width") {
+            std::cout << '\n' << prefix << "image_width: width of the rendered image(pixels).\n\n";
+        }
+        else if (user_input == "anti_aliasing") {
+            std::cout << '\n' << prefix << "anti_aliasing: number of rays calculated within one pixel.\n";
+            std::cout << '\n' << prefix << "higher anti_aliasing greatly increases render time.\n\n";
+        }
+        else if (user_input == "max_depth") {
+            std::cout << '\n' << prefix << "max_depth: the maximum number of times a ray will bounce between objects.\n";
+            std::cout << '\n' << prefix << "higher max+_depth greatly increases render time.\n\n";        
+        }
+        else if (user_input == "skybox_colour_i") {
+            std::cout << '\n' << prefix << "skybox_colour_i: colour at the bottom of the skybox gradient.\n\n";   
+        }
+        else if (user_input == "skybox_colour_j") {
+            std::cout << '\n' << prefix << "skybox_colour_j: colour at the top of the skybox gradient.\n\n";   
+        }
+
         else {
             WriteError(ErrorType::UnknownCommand, true);
         }

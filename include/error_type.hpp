@@ -18,7 +18,8 @@ enum class ErrorType {
     InvalidValue, // Value given to scene variable is invalid
     EmptyValue,
     InvalidSceneFile,
-    InvalidColour
+    InvalidColour,
+    NegativeValue
 };
 
 #endif

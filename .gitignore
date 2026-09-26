@@ -23,7 +23,7 @@ cmake-build-*/
 .vscode/
 .idea/
 
-# Program specific files
+# Program render files
 Data/Renders/*.ppm
 Data/Renders/*.png
 
