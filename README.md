@@ -13,6 +13,8 @@ The program requires **C++20**.
 Build using:
 **g++ -std=c++20 -Iinclude src/main.cpp src/cli.cpp src/scene.cpp -o 25809221_ProgrammingAssignment1**
 
+This program only works on Windows and has in no way been tested on any other OS.
+
 The program outputs rendered images in .ppm format. An image converter is required to view the rendered images in 
 most standard image viewers.
 
