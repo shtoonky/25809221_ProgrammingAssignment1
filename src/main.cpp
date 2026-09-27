@@ -10,7 +10,7 @@ int main() {
     auto result = FileManager::LoadScenes(); // Attempt to load an in-memory database
 
     if (!result.HasValue()) { 
-        return -1; // Exit program if invalid scenes
+        return -1; // Exit program if something goes wrong with Loading Scenes
     } else {
         data.scenes = result.Value();
     }

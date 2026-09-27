@@ -24,8 +24,8 @@ cmake-build-*/
 .idea/
 
 # Program render files
-Data/Renders/*.ppm
-Data/Renders/*.png
+#Data/Renders/*.ppm
+#Data/Renders/*.png
 
 # CLion
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

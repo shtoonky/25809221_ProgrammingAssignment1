@@ -53,7 +53,7 @@ class Camera {
 
                 for (int i = 0; i < image_width; i++) {
                     Colour pixel_colour = Colour (0, 0, 0);
-                    if (samples_per_pixel == 0) {  
+                    if (samples_per_pixel == 0) {   // If anti-aliasing is 'off'
                         auto pixel_center = pixel00_loc + (i * pixel_delta_u + (j * pixel_delta_v));
                         auto ray_direction = pixel_center - center;
                         Ray r(center, ray_direction);
@@ -61,7 +61,7 @@ class Camera {
                         pixel_colour = RayColour(r, max_depth, world);
                         WriteColour(output, pixel_colour);
                     }
-                    else {
+                    else { // Anti-aliasing on
                         pixel_colour = Colour(0, 0, 0);
 
                         for (int sample = 0; sample < samples_per_pixel; sample++) {
