@@ -3,7 +3,7 @@
 #include "cli.hpp"
 #include "scene_data.hpp"
 
-// build with: g++ -std=c++20 -Iinclude src/main.cpp src/cli.cpp src/scene.cpp -o program
+// build with: g++ -std=c++20 -Iinclude src/main.cpp src/cli.cpp src/scene.cpp -o 25809221_ProgrammingAssignment1
 
 int main() {
     SceneData data;
