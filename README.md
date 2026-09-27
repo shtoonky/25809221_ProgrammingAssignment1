@@ -1,0 +1,153 @@
+<h1>25809221_ProgrammingAssignment1</h1>
+
+<h2>Description</h2>
+ A C++ ray tracer with a command-line scene editor.
+
+ Users can create, modify and delete objects within a scene and render the resulting scene to a .ppm file.
+ The .ppm output can then be converted to another image format using image-conversion software of the user's choice.
+
+ <h2>How To Build/Run</h2>
+
+The program requires **C++20**.
+
+Build using:
+**g++ -std=c++20 -Iinclude src/main.cpp src/cli.cpp src/scene.cpp -o 25809221_ProgrammingAssignment1**
+
+This program only works on Windows and has in no way been tested on any other OS.
+
+The program outputs rendered images in .ppm format. An image converter is required to view the rendered images in 
+most standard image viewers.
+
+To begin using the program, enter the command 'help'.
+Note that when running the 'show' command, variable names are as shown and should be used when the user tries to
+modify these properties.
+
+<h2>Additional Information</h2>
+
+<h3>Viewing Rendered Images</h3>
+
+The rendered .ppm files can be converted to a standard image format using image-conversion software.
+
+I have been using ImageMagick for this purpose:
+
+    https://imagemagick.org/ 
+
+For example:
+
+    Magick <scene_name>.ppm <image_name>.png
+
+<h3>3D Worldspace</h3>
+
+Positions can be interpreted as (x, y, z) in a 3D space.
+
+    Positive x goes right. Negative x goes left.
+
+    Positive y goes up. Negative y goes down.
+
+    Positive z goes towards the camera. Negative z goes away from the camera.
+
+<h3>Camera</h3>
+
+The camera is positioned at: 
+
+    (0, 0, 0)
+
+and faces forwards in the **negative z direction**.
+
+If an object does not appear in the rendered image, check that it's position is within the camera's view.
+
+<h3>Scene and Object Information</h3>
+
+Scene properties can be specified (while editing) using:
+
+    > scene_name <new scene_name>
+    > aspect_ratio <double>
+    > image_width <int>
+    > anti_aliasing <int>
+    > max_depth <int>
+    > skybox_colour_i <double> <double> <double>
+    > skybox_colour_j <double> <double> <double>
+
+Scenes have default values:
+
+    > aspect_ratio 1
+    > image_width 100
+    > anti_aliasing 10
+    > max_depth 10
+    > skybox_colour_i 0 0 0
+    > skybox_colour_j 1 1 1
+
+Sphere properties can be specified using:
+
+    > radius <double>
+    > center <double> <double> <double>
+
+Spheres have default values:
+
+    > radius 0.5
+    > center 0 0 -1
+
+Note that object_name cannot be changed after an object has been created, and may not contain spaces.
+
+<h3>Saving Scenes</h3>
+
+Scene changes are saved automatically. However, scene files update when the user exits scene editing. Do not attempt to
+close the program while editing a scene, as the program may behave unexpectedly.
+
+<h3>Scene File Formatting</h3>
+
+Scene data is stored in .txt files in a specific format. The following is an example of a *newly created scene* with
+default values:
+
+    scene_name=scene
+    aspect_ratio=1
+    image_width=100
+    samples_per_pixel=10
+    max_depth=10
+    skybox_colour_i=0,0,0
+    skybox_colour_j=1,1,1
+
+    [Objects]
+
+<img width="100" height="100" alt="scene" src="https://github.com/user-attachments/assets/719908ff-d32b-45c0-bb36-f281b32d5476" />
+
+The following is an example of a *modified scene* with added objects:
+
+    scene_name=scene_mod
+    aspect_ratio=1
+    image_width=450
+    samples_per_pixel=70
+    max_depth=20
+    skybox_colour_i=0.7,0.2,1
+    skybox_colour_j=0.2,0.5,0.7
+
+    [Objects]
+    sphere,sphere0,-0.5,-0.3,-1,0.2
+    sphere,sphere1,0.9,0.9,-2,0.9
+    sphere,sphere2,0.1,0.4,-4.5,1.3
+
+<img width="450" height="450" alt="scene2" src="https://github.com/user-attachments/assets/79d8e023-0e0e-40a9-93e0-c5509eb7cf4d" />
+
+<h3>Potential Issues</h3>
+
+If the program crashes when it is run, there may be an error in the formatting of one the scene files.
+
+If this occurs, either delete the affect .txt scene files or manually correct its formatting.
+
+Generally, scene.txt files should not be edited manually, as incorrect formatting may cause the program to
+behave unexpectedly or crash.
+
+If you render a scene, and convert to a viewable image format and the screen is completely black (unintentionally), you
+most likely have an object colliding with the camera. Ensure the objects in the rendered scene are not touching the position
+(0, 0, 0). 
+
+For example, if you have a sphere, center (0, 0, -1) and radius 5, the camera will be obscured and the render completely black.
+
+<h2>Acknowledgements</h2>
+
+The raytracing implementation was developed while following *Ray Tracing in One Weekend* by Peter Shirly. The book was used as a
+learning resource for the core raytracing concepts and implementation.
+
+The original book and further information can be fount at:
+
+    https://raytracing.github.io/books/RayTracingInOneWeekend.html
