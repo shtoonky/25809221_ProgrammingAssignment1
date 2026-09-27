@@ -8,3 +8,4 @@ skybox_colour_j=1,1,1
 
 [Objects]
 sphere,moo,0,0,-1,0.5
+sphere,floor,0,-100.5,-1,100

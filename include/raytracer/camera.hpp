@@ -44,6 +44,37 @@ class Camera {
             pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
         }
 
+        void Render(std::ostream& output, const Hittable& world) const {
+            output << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+
+            for (int j = 0; j < image_height; j++) {
+
+                std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
+
+                for (int i = 0; i < image_width; i++) {
+                    Colour pixel_colour = Colour (0, 0, 0);
+                    if (samples_per_pixel == 0) {  
+                        auto pixel_center = pixel00_loc + (i * pixel_delta_u + (j * pixel_delta_v));
+                        auto ray_direction = pixel_center - center;
+                        Ray r(center, ray_direction);
+
+                        pixel_colour = RayColour(r, max_depth, world);
+                        WriteColour(output, pixel_colour);
+                    }
+                    else {
+                        pixel_colour = Colour(0, 0, 0);
+
+                        for (int sample = 0; sample < samples_per_pixel; sample++) {
+                            Ray r = GetRay(i, j);
+                            pixel_colour += RayColour(r, max_depth, world);
+                        }
+                        WriteColour(output, pixel_colour * pixel_samples_scale);
+                    }
+                }
+            }
+            std::clog << "\r                             ";          
+        }
+
         Ray GetRay(int i, int j) const {
             // Construct a camera ray originating from the origin and directed at randomly sampled points around the pixel location i, j.
 
@@ -70,40 +101,12 @@ class Camera {
             if (world.Hit(r, Interval(0.001, infinity), rec)) {
                 Vec3 direction = RandomOnHemisphere(rec.normal);
                 return 0.5 * RayColour(Ray(rec.p, direction), depth - 1, world);
-                // return 0.5 * (rec.normal + Colour(1, 1, 1));
             }
 
             Vec3 unit_direction = UnitVector(r.direction());
             auto a = 0.5 * (unit_direction.y() + 1.0);
             return (1.0 - a) * skybox_colour_i + a * skybox_colour_j;
         }
-
-        // Getters :|
-
-        int GetImageHeight() const {
-            return image_height;
-        }
-
-        double GetPixelSamplesScale() const {
-            return pixel_samples_scale;
-        }
-
-        Point3 GetCenter() const {
-            return center;
-        }
-
-        Point3 GetPixel00() const {
-            return pixel00_loc;
-        }
-
-        Vec3 GetPixelDeltaU() const {
-            return pixel_delta_u;
-        }
-
-        Vec3 GetPixelDeltaV() const {
-            return pixel_delta_v;
-        }
-
     private:
         int image_height;
         double pixel_samples_scale;

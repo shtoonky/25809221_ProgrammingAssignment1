@@ -5,7 +5,6 @@
 #include "cli.hpp"
 #include "utils.hpp"
 
-
 void CLI::RunCLI(SceneData& scenes) {
 
     bool running = true;
@@ -22,34 +21,37 @@ void CLI::RunCLI(SceneData& scenes) {
         if ( user_input == "quit") {
             running = false;
         } 
+
         else if (user_input == "help") {
             Help();
         } 
+        // User attempts to add a new scene to the program.
         else if (user_input.starts_with("new ")) {
             std::string name = user_input.substr(4);
 
+            // Scene name must not be empty, contain special characters, or be the same as the name for another saved scene.
             auto valid_name = IsValidNameForScene(name);
             if (valid_name != ErrorType::Null) {
                 WriteError(valid_name);
                 continue;
             }
-
             if (scenes.HasScene(name)) {
                 WriteError(ErrorType::SceneAlreadyExists);
                 continue;
             }
 
             Scene new_scene(name);
-            auto create_file_result = FileManager::SaveScene(new_scene);
+            auto create_file_result = FileManager::SaveScene(new_scene); // Attempt to saved the a default scene to file with the given name
 
             if (!create_file_result.HasValue()) {
                 WriteError(create_file_result.Error());
                 continue;
             }
 
-            scenes.scenes.push_back(new_scene);
-            std::cout << '\n' << name << " successfully create.\n\n";
+            scenes.scenes.push_back(new_scene); // Only add scene to in-memory database if scene.txt was successfully created
+            std::cout << '\n' << name << " successfully created.\n\n";
         } 
+        // User edits a saved scene.
         else if (user_input.starts_with("edit ")){
             std::string name = user_input.substr(5);
 
@@ -67,14 +69,16 @@ void CLI::RunCLI(SceneData& scenes) {
 
             Scene& scene_edit = *result.Value();
             EditScene(scene_edit);
-            // Then save changes to file!
-            FileManager::SaveScene(scene_edit);
+
+            FileManager::SaveScene(scene_edit); // Rewrite the scene to disk memory and save changes after user is finished editing
         } 
+        // Lists all saved scenes.
         else if (user_input == "list") {
             std::vector<Scene> all_scenes = scenes.GetScenes();
 
+            // Special case for when no scenes are saved.
             if (all_scenes.size() == 0) {
-                std::cout << "\nNo scenes saved.\n\n";
+                std::cout << "\nno scenes saved.\n\n";
                 continue;
             }
 
@@ -84,6 +88,7 @@ void CLI::RunCLI(SceneData& scenes) {
             }
             std::cout << '\n';
         } 
+        // Shows the properties of a saved scene.
         else if (user_input.starts_with("show ")) {
             std::string name = user_input.substr(5);
 
@@ -95,9 +100,9 @@ void CLI::RunCLI(SceneData& scenes) {
             }
 
             Scene& scene_show = *result.Value();
-
             scene_show.Show();
         } 
+        // Render a saved scene to a .ppm file.
         else if (user_input.starts_with("render ")) {
             std::string name = user_input.substr(7);
 
@@ -114,9 +119,9 @@ void CLI::RunCLI(SceneData& scenes) {
             }
 
             Scene& scene_render = *result.Value();
-            scene_render.Initialise();
+            scene_render.Initialise(); // Initialise values for Camera object
 
-            auto render_result = FileManager::WriteRender(scene_render);
+            auto render_result = FileManager::WriteRender(scene_render); // Write .ppm file to Data/Renders/
             
             if (!render_result.HasValue()) {
                 WriteError(render_result.Error());
@@ -124,8 +129,9 @@ void CLI::RunCLI(SceneData& scenes) {
             }
 
             std::cout<< '\n' << name << " successfully rendered.\n";
-            std::cout << "find the .ppm file at " << render_result.Value() << "\n\n";
+            std::cout << "find the .ppm file at " << render_result.Value() << "\n\n"; // WriteRender returns a string with the file directory
         } 
+        // User attempts to delete a saved scene.
         else if (user_input.starts_with("delete ")) {
             std::string name = user_input.substr(7);
 
@@ -144,17 +150,14 @@ void CLI::RunCLI(SceneData& scenes) {
             auto delete_scene_result = scenes.DeleteScene(name);
             auto delete_file_result = FileManager::DeleteScene(name);
 
-            if (!delete_scene_result.HasValue()) {
+            if (!delete_scene_result.HasValue() || !delete_file_result.HasValue()) {
                 WriteError(delete_scene_result.Error());
-                continue;
-            }
-            else if (!delete_file_result.HasValue()) {
-                WriteError(delete_file_result.Error());
                 continue;
             }
 
             std::cout << '\n' << name << " successfully deleted.\n\n";
         } 
+        // If user_input was not recognised as a command, print an error message.
         else {
             WriteError(ErrorType::UnknownCommand);
         }
@@ -182,8 +185,9 @@ void CLI::EditScene(Scene& scene) {
     int indent {3};
     const std::string prefix = std::string(indent, ' ');
 
-    std::vector<std::string> names = scene.GetObjectNames();
-    std::vector<std::string> scene_settings {"scene_name","aspect_ratio","image_width","anti_aliasing","max_depth","skybox_colour_i","skybox_colour_j"};
+    std::vector<std::string> names = scene.GetObjectNames(); // Used to compare user_input to current object names
+    std::vector<std::string> scene_settings {"scene_name","aspect_ratio","image_width","anti_aliasing","max_depth","skybox_colour_i",
+        "skybox_colour_j"}; // Used to compare user_input to scene properties
 
     std::cout << '\n';
 
@@ -202,9 +206,11 @@ void CLI::EditScene(Scene& scene) {
             std::cout << "\nNo longer editing " << scene.scene_name << ".\n\n";
             editing = false;
         }
+
         else if (user_input == "help") {
             EditHelp();
         }
+        // User attempts to add a new object to scene.
         else if (user_input.starts_with("new ")) {
             std::string obj_info = user_input.substr(4);
 
@@ -234,7 +240,8 @@ void CLI::EditScene(Scene& scene) {
             std::cout << '\n' << prefix << object_name << " successfully added to " << scene.scene_name << ".\n\n";
             names = scene.GetObjectNames();
         }
-        else if (IsObjectName(user_input, names)) { // User is attempting to modify an object's value
+        // User is attempting to modify an object variable.
+        else if (IsObjectName(user_input, names)) { 
 
             std::istringstream iss(user_input);
             std::string object_name;
@@ -242,7 +249,7 @@ void CLI::EditScene(Scene& scene) {
             std::string value;
 
             iss >> object_name >> variable_name;
-            std::getline(iss, value);
+            std::getline(iss, value); // Some value formatting requires spaces
             value.erase(0, value.find_first_not_of(' '));
 
             if (variable_name.empty() || value.empty()) {
@@ -274,7 +281,8 @@ void CLI::EditScene(Scene& scene) {
                 std::cout << '\n' << prefix << "Successfully modified " << object_name << ".\n\n";
             }
         }
-        else if (IsSceneSetting(user_input, scene_settings)) { // User is attempting to modify scene settings
+        // User is attempting to modify scene settings.
+        else if (IsSceneSetting(user_input, scene_settings)) {
             std::istringstream iss(user_input);
             std::string setting_name;
             std::string value;
@@ -365,9 +373,10 @@ void CLI::EditScene(Scene& scene) {
             }
 
         }
+        // Lists objects in the scene.
         else if (user_input.starts_with("list")) {
             std::cout << '\n';
-
+            // Special case where there are no objects in a scene.
             if (scene.world.objects.size() == 0) {
                 std::cout << prefix << "No objects in " << scene.scene_name << ".\n";
             }
@@ -381,6 +390,7 @@ void CLI::EditScene(Scene& scene) {
 
             std::cout << '\n';
         }
+        // User attempts to show the properties of an object in the scene.
         else if (user_input.starts_with("show ")) {
             std::string obj_name = user_input.substr(5);
 
@@ -388,7 +398,6 @@ void CLI::EditScene(Scene& scene) {
                 WriteError(ErrorType::FilenameEmpty, true);
                 continue;
             }
-
             if (!scene.HasObject(obj_name)) {
                 WriteError(ErrorType::ObjectNotFound, true);
                 continue;
@@ -402,9 +411,9 @@ void CLI::EditScene(Scene& scene) {
             }
 
             auto object = object_result.Value();
-
             ShowObject(object);
         }
+        // User attempts to delete an object in the scene.
         else if (user_input.starts_with("delete ")) {
             std::string obj_name = user_input.substr(7);
 
@@ -423,6 +432,7 @@ void CLI::EditScene(Scene& scene) {
             std::cout << '\n' << prefix << obj_name << " successfully delete from " << scene.scene_name << ".\n\n";
             names = scene.GetObjectNames();
         }
+        // Commands from the initial CLI state, just applied to the current scene.
         else if (user_input == "show") {
             scene.Show(true);
         }
@@ -439,6 +449,7 @@ void CLI::EditScene(Scene& scene) {
             std::cout << '\n' << prefix << scene.scene_name << " successfully rendered.\n";
             std::cout << prefix << "find the .ppm file at " << render_result.Value() << "\n\n"; 
         }
+        // Specific commands to show the purpose of each scene property.
         else if (user_input == "aspect_ratio") {
             std::cout << '\n' << prefix << "aspect_ratio: proportion between image_width and the rendered image's height.\n\n";
         }
@@ -459,7 +470,7 @@ void CLI::EditScene(Scene& scene) {
         else if (user_input == "skybox_colour_j") {
             std::cout << '\n' << prefix << "skybox_colour_j: colour at the top of the skybox gradient.\n\n";   
         }
-
+        // If user_input was not recognised as a command, print an error message.
         else {
             WriteError(ErrorType::UnknownCommand, true);
         }

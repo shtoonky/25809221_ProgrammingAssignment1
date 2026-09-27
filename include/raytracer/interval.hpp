@@ -10,10 +10,6 @@ class Interval {
         Interval() : min(+infinity), max(-infinity) {} // Default interval is empty
         Interval(double min, double max) : min(min), max(max) {}
 
-        // bool size() const {
-        //     return max - min;
-        // }
-
         bool Surrounds(double x) const {
             return min < x && x < max;
         }

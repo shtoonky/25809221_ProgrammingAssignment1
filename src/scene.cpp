@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iomanip>
 
+// Declare all modifiable values of Camera and calculate Camera private members.
 void Scene::Initialise() {
     cam.aspect_ratio = aspect_ratio;
     cam.image_width = image_width;

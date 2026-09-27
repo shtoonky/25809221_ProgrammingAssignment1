@@ -103,6 +103,7 @@ inline bool IsValidFilename(const std::string& name) {
     return true;
 }
 
+// A scene name must not be empty, and should not include certain special characters.
 inline ErrorType IsValidNameForScene(const std::string& name) {
     if (name.empty()) {
         return ErrorType::FilenameEmpty;

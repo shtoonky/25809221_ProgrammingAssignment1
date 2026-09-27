@@ -16,7 +16,7 @@ namespace fs = std::filesystem;
 // Handles ALL file i/o
 class FileManager {
     public:
-        // Deletes a scene file in the Scene directory.
+        // Removes a scene.txt file in the Scene directory.
         static Result<void, ErrorType> DeleteScene(const std::string& name) {
             try {
                 for (const auto& entry : fs::directory_iterator("Data/Scenes")) {
@@ -41,6 +41,7 @@ class FileManager {
             return false;
         }
 
+        // Returns a list of Scenes found in the Data/Scenes/ directory.
         static Result<std::vector<Scene>, ErrorType> LoadScenes() {
             std::vector<Scene> scenes;
 
@@ -56,15 +57,14 @@ class FileManager {
             return Result<std::vector<Scene>, ErrorType>::Success(scenes);
         }
 
-        // Returns a scene based on the contents of a scene file.
+        // Returns a scene based on the contents of a scene.txt file.
         static Result<Scene, ErrorType> LoadScene(const std::string& name) {
 
             try {
-
                 Scene scene;
                 fs::path filepath;
 
-                // Find the correct scene by name
+                // Find the correct scene by name.
                 for (const auto& entry : fs::directory_iterator("Data/Scenes")) {
                     if (entry.path().stem().string() == name) {
                         filepath = entry.path();
@@ -121,7 +121,7 @@ class FileManager {
                                 colour.push_back(component);
                             }
 
-                            scene.skybox_colour_j = Colour(std::stod(colour[0]), std::stod(colour[1]), std::stod(colour[2]));
+                            scene.skybox_colour_i = Colour(std::stod(colour[0]), std::stod(colour[1]), std::stod(colour[2]));
                         }
                         else if (key == "skybox_colour_j") {
                             std::vector<std::string> colour;
@@ -165,7 +165,7 @@ class FileManager {
             }
         }
 
-        // Creates a ppm file based on scene data.
+        // Creates a .ppm file based on scene data.
         static Result<std::string, ErrorType> WriteRender(const Scene& scene) {
             std::ofstream output_file("Data/Renders/" + scene.scene_name + ".ppm");
             std::string output_dir("Data/Renders/" + scene.scene_name + ".ppm");
@@ -180,43 +180,17 @@ class FileManager {
                 return Result<std::string, ErrorType>::Failure(ErrorType::InvalidSceneFile);
             }
 
-            output_file << "P3\n" << scene.image_width << ' ' << cam.GetImageHeight() << "\n255\n";
+            cam.Render(output_file, scene.world);
 
-            for (int j = 0; j < cam.GetImageHeight(); j++) {
-
-                std::clog << "\rScanlines remaining: " << (cam.GetImageHeight() - j) << ' ' << std::flush;
-
-                for (int i = 0; i < scene.image_width; i++) {
-                    Colour pixel_colour = Colour (0, 0, 0);
-                    if (cam.samples_per_pixel == 0) {  
-                        auto pixel_center = cam.GetPixel00() + (i * cam.GetPixelDeltaU() + (j * cam.GetPixelDeltaV()));
-                        auto ray_direction = pixel_center - cam.GetCenter();
-                        Ray r(cam.GetCenter(), ray_direction);
-
-                        pixel_colour = cam.RayColour(r, cam.max_depth, scene.world);
-                        WriteColour(output_file, pixel_colour);
-                    }
-                    else {
-                        pixel_colour = Colour(0, 0, 0);
-
-                        for (int sample = 0; sample < cam.samples_per_pixel; sample++) {
-                            Ray r = cam.GetRay(i, j);
-                            pixel_colour += cam.RayColour(r, cam.max_depth, scene.world);
-                        }
-                        WriteColour(output_file, pixel_colour * cam.GetPixelSamplesScale());
-                    }
-                }
-            }
-            std::clog << "\r                             ";
             return Result<std::string, ErrorType>::Success(output_dir);
         }
 
         // Write a scene's contents to memory.
         static Result<void, ErrorType> SaveScene(const Scene& scene) {
-
-            auto GetColour = [](Colour colour){
+            // Print contents of a Vec3 with commas in between each value.
+            auto GetVec3 = [](Vec3 v){
                 std::ostringstream out;
-                out << colour.x() << ',' << colour.y() << ',' << colour.z();
+                out << v.x() << ',' << v.y() << ',' << v.z();
                 return out.str();
             };
 
@@ -231,13 +205,13 @@ class FileManager {
             output_file << "image_width=" << scene.image_width << '\n';
             output_file << "samples_per_pixel=" << scene.samples_per_pixel << '\n';
             output_file << "max_depth=" << scene.max_depth << '\n';
-            output_file << "skybox_colour_i=" << GetColour(scene.skybox_colour_i) << '\n';
-            output_file << "skybox_colour_j=" << GetColour(scene.skybox_colour_j) << "\n\n";
+            output_file << "skybox_colour_i=" << GetVec3(scene.skybox_colour_i) << '\n';
+            output_file << "skybox_colour_j=" << GetVec3(scene.skybox_colour_j) << "\n\n";
             output_file << "[Objects]\n";
 
             for (const auto& object : scene.world.objects) {
                 if (auto sphere = std::dynamic_pointer_cast<Sphere>(object)) {
-                    output_file << "sphere," << sphere -> name << ',' << sphere -> center.e[0] << ',' << sphere -> center.e[1] << ',' << sphere -> center.e[2]  << ',' << sphere -> radius << '\n';
+                    output_file << "sphere," << sphere -> name << ',' << GetVec3(sphere->center) << ',' << sphere -> radius << '\n';
                 }
                 else {
                     continue;

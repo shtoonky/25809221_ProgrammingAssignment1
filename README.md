@@ -137,6 +137,12 @@ If this occurs, either delete the affect .txt scene files or manually correct it
 Generally, scene.txt files should not be edited manually, as incorrect formatting may cause the program to
 behave unexpectedly or crash.
 
+If you render a scene, and convert to a viewable image format and the screen is completely black (unintentionally), you
+most likely have an object colliding with the camera. Ensure the objects in the rendered scene are not touching the position
+(0, 0, 0). 
+
+For example, if you have a sphere, center (0, 0, -1) and radius 5, the camera will be obscured and the render completely black.
+
 <h2>Acknowledgements</h2>
 
 The raytracing implementation was developed while following *Ray Tracing in One Weekend* by Peter Shirly. The book was used as a

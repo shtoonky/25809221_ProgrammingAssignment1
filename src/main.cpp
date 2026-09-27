@@ -7,15 +7,15 @@
 
 int main() {
     SceneData data;
-    auto result = FileManager::LoadScenes();
+    auto result = FileManager::LoadScenes(); // Attempt to load an in-memory database
 
-    if (!result.HasValue()) {
-        return -1;
+    if (!result.HasValue()) { 
+        return -1; // Exit program if invalid scenes
     } else {
         data.scenes = result.Value();
     }
 
-    CLI::RunCLI(data);
+    CLI::RunCLI(data); // Run command line interface
 
     return 0;   
 }

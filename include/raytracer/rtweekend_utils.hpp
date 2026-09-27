@@ -26,5 +26,4 @@ inline double RandomDouble(double min, double max) {
     return min + (max - min) * RandomDouble();
 }
 
-
 #endif
