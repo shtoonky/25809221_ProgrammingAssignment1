@@ -8,7 +8,7 @@
 
  <h2>How To Build/Run</h2>
 
-The program requires **C++20**.
+The program requires **C++20** or higher, and **GCC/G++ 15.2.0** or higher.
 
 Build using:
 **g++ -std=c++20 -Iinclude src/main.cpp src/cli.cpp src/scene.cpp -o 25809221_ProgrammingAssignment1**
